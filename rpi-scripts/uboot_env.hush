@@ -1,33 +1,41 @@
 mmc dev 0
 
+
+#Kernel files
 setenv bootfile bootcode.bin
 setenv fdtfile bcm2708-rpi-b-plus.dtb
-fatload mmc 0:1 ${kernel_addr_r} zImage
-fatload mmc 0:1 ${fdt_addr_r} ${fdtfile}
-
+setenv boot_kernel 'bootz ${kernel_addr_r} - ${fdt_addr_r}'
+setenv bootargs earlyprintk root=${which_fs_part} rootwait console=tty1 console=ttyAMA0,115200
 setenv put_files 'fatload mmc 0:1 ${kernel_addr_r} zImage ; fatload mmc 0:1 ${fdt_addr_r} ${fdtfile}'
+
+#We need to reload bootargs when partition changed
 setenv reload_bootargs 'setenv bootargs earlyprintk root=${which_fs_part} rootwait console=tty1 console=ttyAMA0,115200'
 
-setenv test_validity true
+
+#Update and boot partition
+
+#Rootfs
 setenv part 0
 setenv FS_PART_0 /dev/mmcblk0p2
 setenv FS_PART_1 /dev/mmcblk0p3
 setenv which_fs_part ${FS_PART_0}
 
+#Application
 setenv appli 0
 setenv APP_PART_0 /dev/mmcblk0p6
 setenv APP_PART_1 /dev/mmcblk0p7
 
+setenv test_validity true
+setenv test_count 3
+setenv update_verif ' if test "${test_validity}" = "false" ; then setexpr test_count ${test_count} - 1 ; if test "${test_count}" = "0" ; then setexpr part ${part} ^ 1 ; if test ${part} = "0" ; then setenv which_fs_part ${FS_PART_0}; else setenv which_fs_part ${FS_PART_1};fi;fi;fi; run reload_bootargs ; echo " Partition change " ; saveenv ; run boot_kernel '
 
-setenv number_try 3
-setenv test_count ${number_try}
-
-setenv boot_kernel 'bootz ${kernel_addr_r} - ${fdt_addr_r}'
-setenv update_verif ' if test "${test_validity}" = "false" ; then setexpr test_count ${test_count} - 1 ; if test "${test_count}" = "0" ; then setexpr part ${part} ^ 1 ; fi; if test ${part} = "0" ; then setenv which_fs_part ${FS_PART_0}; else setenv which_fs_part ${FS_PART_1}; fi;fi; run reload_bootargs ; echo " Partition change " ; saveenv ; run boot_kernel '
-
+#Used if is_init_ok=0 to init u-boot variables
 setenv put_init_script ' mmc dev 0 ; fatload mmc 0:1 ${scriptaddr} init_script.img '
-setenv bootcmd ' if test "${init_ok}" = "0" ; then run put_init_script ;source ${scriptaddr} ; else run put_files ; run update_verif; fi'
-setenv bootargs earlyprintk root=${which_fs_part} rootwait console=tty1 console=ttyAMA0,115200
-setenv init_ok 1
+
+#bootcmd is the first variable executed 
+setenv bootcmd ' if test "${is_init_ok}" = "0" ; then run put_init_script ;source ${scriptaddr} ; else run put_files ; run update_verif; fi'
+
+setenv is_init_ok 1
+
 saveenv 
 boot
