@@ -2,7 +2,7 @@
 
 CONTAINER_VER="1.0"
 PRODUCT_NAME="swupdate"
-SWUPDATE_FILES_PATH="${PWD}/swupdate"
+SWUPDATE_FILES_PATH="${BR2_EXTERNAL}/swupdate"
 FILES="sw-description sw-description.sig"
 
 compute_hash(){
