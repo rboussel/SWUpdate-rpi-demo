@@ -1,0 +1,82 @@
+software =
+{
+    version = "0.1";
+    
+    hardware-compatibility = [ "revA" ];
+    
+    /* differentiate running image modes/sets */
+    rootfs:
+    {
+        main:
+        {
+            images: (
+            {
+                filename = "rootfs.ext2";
+                device = "/dev/mmcblk0p2";
+                sha256 = @rootfs.ext2
+            }
+            );
+            uboot: (
+            {
+                name = "test_count";
+                value = "3";
+            },
+            {
+                name = "test_validity";
+                value = "false";
+            },
+            {
+                name = "part";
+                value = "0";
+            }
+            );
+        }
+        
+        alt:
+        {
+            images: (
+            {
+                filename = "rootfs.ext2";
+                device = "/dev/mmcblk0p3";
+                sha256 = @rootfs.ext2 
+            } 
+            );
+            
+            uboot: (
+            {
+                name = "test_count";
+                value = "3";
+            },
+            {
+                name = "test_validity";
+                value = "false";
+            },
+            {
+                name = "part";
+                value = "1";
+            }
+            );
+        };
+    };
+    
+    
+    application = {
+        main: {
+            uboot: (
+            {
+                name = "appli";
+                value = "0";
+            }
+            );
+        }
+        alt: {
+            uboot: (
+            {
+                name = "appli"; 
+                value = "1";
+            }
+            );
+        }
+    };
+}
+
