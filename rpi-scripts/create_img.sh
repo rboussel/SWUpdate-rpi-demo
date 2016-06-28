@@ -1,7 +1,7 @@
 #!/bin/sh
 
-SCRIPT_PATH="uboot_env.hush"
-DESTINATION_PATH="uboot_env.img"
+SCRIPT_PATH="${BR2_EXTERNAL}/rpi-scripts/uboot_env.hush"
+DESTINATION_PATH="${BR2_EXTERNAL}/rpi-scripts/uboot_env.img"
 
 create_swu_image(){
 
