@@ -5,3 +5,4 @@
 config BR2SM_PROJECT_NAME
 	string
 	option env="PROJECT_NAME"
+source "$BR2_EXTERNAL/package/swupdate-custom/Config.in"
