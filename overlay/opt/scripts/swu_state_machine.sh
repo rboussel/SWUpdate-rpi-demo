@@ -1,6 +1,5 @@
 #!/bin/sh
 UPDATE_DIR="/DATA/update"
-EXTENTION="swu"
 PUBLIC_KEY_PATH="${UPDATE_DIR}/public.pem"
 UPDATE_NAME="swupdate_1.0.swu"
 R="2"
@@ -54,8 +53,7 @@ retry_update () {
     echo "UPDATE"
     lauch_update
   else 
-    #TODO: marquer la version comme invalide 
-    retry_next
+    ./invalidate_update.sh ${UPDATE_NAME}
   fi
 }
 
