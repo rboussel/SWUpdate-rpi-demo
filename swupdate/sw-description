@@ -11,6 +11,9 @@ software =
         {
             images: (
             {
+                name = "rootfs1";
+                version = "2016-06";
+                install-if-different = true;
                 filename = "rootfs.ext2";
                 device = "/dev/mmcblk0p2";
                 sha256 = @rootfs.ext2
@@ -36,6 +39,9 @@ software =
         {
             images: (
             {
+                name = "rootfs2";
+                version = "2016-06";
+                install-if-different = true;               
                 filename = "rootfs.ext2";
                 device = "/dev/mmcblk0p3";
                 sha256 = @rootfs.ext2 
