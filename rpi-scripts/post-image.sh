@@ -12,7 +12,7 @@ ${HOST_DIR}/usr/bin/mkknlimg "${BINARIES_DIR}/zImage" \
 
 rm -rf "${GENIMAGE_TMP}"
 genimage                           \
-	--rootpath "${TARGET_DIR}"     \
+	--rootpath "${BR2_EXTERNAL}/mountpoint"     \
 	--tmppath "${GENIMAGE_TMP}"    \
 	--inputpath "${BINARIES_DIR}"  \
 	--outputpath "${BINARIES_DIR}" \
