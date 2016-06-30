@@ -4,7 +4,7 @@ PUBLIC_KEY_PATH="${UPDATE_DIR}/public.pem"
 UPDATE_NAME="swupdate_1.0.swu"
 R="2"
 
-retry_next () {
+wait_update () {
   fw_setenv test_validity "true"
   fw_setenv retry_count "$R"
 }
@@ -50,21 +50,21 @@ retry_update () {
   retry_count_val=$(decrement_variable "retry_count")
   if [ "$retry_count_val" -gt 0 ]
   then
-    echo "UPDATE"
     lauch_update
   else 
     ./invalidate_update.sh ${UPDATE_NAME}
+    wait_udpate
   fi
 }
 
-count_test () {
+check_value () {
   val_count=$(fw_printenv $1 | cut -d= -f2)
-  if [ "$val_count" -gt "0" ]; then retry_next ; else retry_update ; fi
+  if [ "$val_count" -gt "0" ]; then wait_update ; else retry_update ; fi
 }
 
 # Specific commands to Raspberry Pi for u-boot environment
 mount /dev/mmcblk0p1 /mnt
 echo "/mnt/uboot.env 0x0000 0x4000 0x4000" > /etc/fw_env.config
 
-fw_printenv test_validity | grep "true" && retry_next || count_test "test_count"
+fw_printenv test_validity | grep "true" && wait_update || check_value "test_count"
 
