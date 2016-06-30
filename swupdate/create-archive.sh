@@ -1,7 +1,8 @@
 #!/bin/sh
 
 CONTAINER_VER="1.0"
-PRODUCT_NAME="swupdate"
+EMERGENCY_WORD="CRITICAL"
+PRODUCT_NAME="rpi_swupdate"
 SWUPDATE_FILES_PATH="${BR2_EXTERNAL}/swupdate"
 FILES="sw-description sw-description.sig"
 
@@ -28,7 +29,7 @@ create_swdescription_sig(){
 create_swu(){
 	cd ${BINARIES_DIR}
 	for file in $FILES; do
-		echo $file;done | cpio -ov -H crc >  ${PRODUCT_NAME}_${CONTAINER_VER}.swu
+		echo $file;done | cpio -ov -H crc >  ${PRODUCT_NAME}-${CONTAINER_VER}-${EMERGENCY_WORD}.swu
 	rm sw-description sw-description.sig
 }
 
