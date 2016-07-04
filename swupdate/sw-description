@@ -4,14 +4,13 @@ software =
     
     hardware-compatibility = [ "revA" ];
     
-    /* differentiate running image modes/sets */
     rootfs:
     {
         main:
         {
             images: (
             {
-                name = "rootfs1";
+                name = "rootfs_1";
                 version = "2016-06";
                 install-if-different = true;
                 filename = "rootfs.ext2";
@@ -39,7 +38,7 @@ software =
         {
             images: (
             {
-                name = "rootfs2";
+                name = "rootfs_2";
                 version = "2016-06";
                 install-if-different = true;               
                 filename = "rootfs.ext2";
@@ -68,6 +67,19 @@ software =
     
     application = {
         main: {
+  
+            images: (
+            {
+                name = "appli_1";
+                version = "2016-06";
+                install-if-different = true;
+                filename = "app_part_image.ext4";
+                device = "/dev/mmcblk0p5";
+                sha256 = @app_part_image.ext4
+            }
+
+
+
             uboot: (
             {
                 name = "appli";
@@ -76,6 +88,19 @@ software =
             );
         }
         alt: {
+            
+             images: (
+            {
+                name = "appli_2";
+                version = "2016-06";
+                install-if-different = true;
+                filename = "app_part_image.ext4";
+                device = "/dev/mmcblk0p6";
+                sha256 = @app_part_image.ext4
+            }
+            );
+
+            
             uboot: (
             {
                 name = "appli"; 
