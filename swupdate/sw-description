@@ -77,8 +77,7 @@ software =
                 device = "/dev/mmcblk0p5";
                 sha256 = @app_part_image.ext4
             }
-
-
+            );
 
             uboot: (
             {
@@ -87,6 +86,7 @@ software =
             }
             );
         }
+
         alt: {
             
              images: (
@@ -99,8 +99,7 @@ software =
                 sha256 = @app_part_image.ext4
             }
             );
-
-            
+    
             uboot: (
             {
                 name = "appli"; 

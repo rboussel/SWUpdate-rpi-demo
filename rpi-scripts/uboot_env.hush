@@ -27,7 +27,7 @@ setenv APP_PART_1 /dev/mmcblk0p7
 
 setenv test_validity true
 setenv test_count 3
-setenv update_verif ' if test "${test_validity}" = "false" ; then setexpr test_count ${test_count} - 1 ; if test "${test_count}" = "0" ; then setexpr part ${part} ^ 1 ; if test ${part} = "0" ; then setenv which_fs_part ${FS_PART_0}; else setenv which_fs_part ${FS_PART_1};fi;fi;fi; run reload_bootargs ; echo " Partition change " ; saveenv ; run boot_kernel '
+setenv update_verif ' if test "${test_validity}" = "false" ; then setexpr test_count ${test_count} - 1 ; if test "${test_count}" = "0" ; then setexpr part ${part} ^ 1 ;fi; if test ${part} = "0" ; then setenv which_fs_part ${FS_PART_0}; else setenv which_fs_part ${FS_PART_1};fi;fi; run reload_bootargs ; echo " Partition change " ; saveenv ; run boot_kernel '
 
 #Used if is_init_ok=0 to init u-boot variables
 setenv put_init_script ' mmc dev 0 ; fatload mmc 0:1 ${scriptaddr} init_script.img '
