@@ -1,0 +1,13 @@
+#!/bin/sh
+
+case "$1" in
+  start)
+    echo "Starting update validation..."
+    ./usr/sbin/swu_state_machine
+    ;;
+    *)
+
+echo "Usage: $0 {start}"
+exit 1
+;;
+ esac
