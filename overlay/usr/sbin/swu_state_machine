@@ -40,10 +40,6 @@ check_value () {
   val_count=$(fw_printenv $1 | cut -d= -f2)
   if [ "$val_count" -gt "0" ]; then wait_update ; else retry_update ; fi
 }
-
-# Specific commands to Raspberry Pi for u-boot environment
-mount /dev/mmcblk0p1 /mnt
-
 fw_printenv test_validity | grep "true" && wait_update || check_value "test_count"
 
 #test
