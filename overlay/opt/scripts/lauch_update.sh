@@ -12,7 +12,7 @@ find_fs () {
   else
     UPDATED_PARTITION="rootfs,main"
   fi
-  echo "Update root file system on ${UPDATED_PARTITION}"
+  echo "${UPDATED_PARTITION}"
 }
 
 find_app () {
@@ -23,15 +23,15 @@ find_app () {
   else
     UPDATED_PARTITION="application,main"
   fi
-  echo "Update application on ${UPDATED_PARTITION}"
+  echo "{UPDATED_PARTITION}"
 }
 
 lauch_update () {
   UPDATED_PARTITION=$(find_fs)
-  swupdate -k ${PUBLIC_KEY_PATH} -H raspb:revA -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$1"
+  swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$1"
   #verif if ok 
   UPDATED_PARTITION=$(find_app)
-  swupdate -k ${PUBLIC_KEY_PATH} -H raspb:revA -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$1"
+  swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$1"
 }
 
 lauch_update $1
