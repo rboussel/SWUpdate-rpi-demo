@@ -27,11 +27,13 @@ find_app () {
 }
 
 lauch_update () {
+  mount /dev/mmcblk0p1 /mnt
   UPDATED_PARTITION=$(find_fs)
   swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$1"
   #verif if ok 
   UPDATED_PARTITION=$(find_app)
   swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$1"
+  umount /dev/mmcblk0p1
 }
 
 lauch_update $1
