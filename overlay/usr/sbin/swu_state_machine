@@ -1,5 +1,4 @@
 #!/bin/sh
-UPDATE_NAME="swupdate_1.0.swu"
 R="2"
 
 wait_update () {
@@ -18,7 +17,6 @@ decrement_variable () {
 }
 
 retry_update () {
-
  retry_count_val=$(decrement_variable "retry_count")
  #test
  echo "retry count $(fw_printenv retry_count)"
@@ -26,12 +24,12 @@ retry_update () {
  
  if [ "$retry_count_val" -gt 0 ]
   then
-    ./lauch_update ${UPDATE_NAME}
+    source /opt/scripts/lauch_update ${UPDATE_NAME}
   else
     #test
     echo "invalidate version"
     #test
-    ./invalidate_update.sh ${UPDATE_NAME}
+    /opt/scripts/invalidate_update.sh ${UPDATE_NAME}
     wait_udpate
   fi
 }

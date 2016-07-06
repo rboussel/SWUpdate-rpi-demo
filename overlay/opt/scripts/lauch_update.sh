@@ -1,9 +1,5 @@
 #!/bin/sh
 
-UPDATE_DIR="/DATA/update"
-PUBLIC_KEY_PATH="${UPDATE_DIR}/public.pem"
-
-
 find_fs () {
   current_part=$(fw_printenv "part" | cut -d= -f2)
   if [ "$current_part" -eq 0 ]
@@ -23,7 +19,7 @@ find_app () {
   else
     UPDATED_PARTITION="application,main"
   fi
-  echo "{UPDATED_PARTITION}"
+  echo "${UPDATED_PARTITION}"
 }
 
 lauch_update () {

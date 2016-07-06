@@ -1,6 +1,5 @@
 #!/bin/sh
 
-SWU_ARCHIVE_DIR="/DATA/update/"
 INVALID_UPDATE_FILE="/etc/update_files/invalid_update.txt"
 
 get_archive () {
@@ -18,7 +17,7 @@ verify_version_invalidity () {
   then 
     exit 0
   else
-    ./lauch_update $1
+    source lauch_update.sh $1
     #change /etc/hwrevision version
   fi   
 }

@@ -1,0 +1,4 @@
+CURRENT_APPLI_PART="/dev/mmcblk0p5"
+UPDATE_DIR="/DATA/update"
+PUBLIC_KEY_PATH="${UPDATE_DIR}/public.pem"
+UPDATE_NAME="rpi_swupdate-1.0-CRITICAL.swu"
