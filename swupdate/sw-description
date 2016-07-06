@@ -1,8 +1,7 @@
 software =
 {
     version = "0.1";
-    
-    hardware-compatibility = [ "revA" ];
+    hardware-compatibility = [ "revA" ]; 
     
     rootfs:
     {
@@ -10,9 +9,6 @@ software =
         {
             images: (
             {
-                name = "rootfs_1";
-                version = "2016-06";
-                install-if-different = true;
                 filename = "rootfs.ext2";
                 device = "/dev/mmcblk0p2";
                 sha256 = @rootfs.ext2
@@ -32,15 +28,21 @@ software =
                 value = "0";
             }
             );
+            scripts: (
+            {
+                filename = "init_crontab.sh";
+                type = "shellscript";
+                sha256 = @init_crontab.sh
+             }
+             );
+
+
         }
         
         alt:
         {
             images: (
             {
-                name = "rootfs_2";
-                version = "2016-06";
-                install-if-different = true;               
                 filename = "rootfs.ext2";
                 device = "/dev/mmcblk0p3";
                 sha256 = @rootfs.ext2 
@@ -61,6 +63,14 @@ software =
                 value = "1";
             }
             );
+            
+             scripts: (
+            {
+                filename = "init_crontab.sh";
+                type = "shellscript";
+                sha256 = @init_crontab.sh
+             }
+             );
         };
     };
     
@@ -70,9 +80,6 @@ software =
   
             images: (
             {
-                name = "appli_1";
-                version = "2016-06";
-                install-if-different = true;
                 filename = "app_part_image.ext4";
                 device = "/dev/mmcblk0p5";
                 sha256 = @app_part_image.ext4
@@ -91,9 +98,6 @@ software =
             
              images: (
             {
-                name = "appli_2";
-                version = "2016-06";
-                install-if-different = true;
                 filename = "app_part_image.ext4";
                 device = "/dev/mmcblk0p6";
                 sha256 = @app_part_image.ext4
