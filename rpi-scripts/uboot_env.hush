@@ -1,3 +1,4 @@
+#Init script for u-boot variables
 mmc dev 0
 
 
@@ -19,11 +20,6 @@ setenv part 0
 setenv FS_PART_0 /dev/mmcblk0p2
 setenv FS_PART_1 /dev/mmcblk0p3
 setenv which_fs_part ${FS_PART_0}
-
-#Application
-setenv appli 0
-setenv APP_PART_0 /dev/mmcblk0p6
-setenv APP_PART_1 /dev/mmcblk0p7
 
 setenv test_validity true
 setenv test_count 3
