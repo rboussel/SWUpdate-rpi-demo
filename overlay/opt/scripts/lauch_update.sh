@@ -22,14 +22,22 @@ find_app () {
   echo "${UPDATED_PARTITION}"
 }
 
+
 lauch_update () {
   mount /dev/mmcblk0p1 /mnt
   mount /dev/mmcblk0p7 /DATA
-  UPDATED_PARTITION=$(find_fs)
-  swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$ROOTFS_UPDATE_NAME"
-  #verif if ok 
+  if [ $etat_maj == "E_PROCESSUS_MAJ_COMPLETE" && !$etat_rootfs="E_ATTENTE_APPLI" ]
+  then 
+    UPDATED_PARTITION=$(find_fs)
+    swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$ROOTFS_UPDATE_NAME"
+    #verif if ok 
+  fi
+
   UPDATED_PARTITION=$(find_app)
   swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$APPLICATION_UPDATE_NAME"
+
+#A completer
+   source change_application_part
   umount /dev/mmcblk0p1
   umount /dev/mmcblk0p7
 }
