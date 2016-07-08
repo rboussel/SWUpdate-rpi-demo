@@ -40,6 +40,11 @@ lauch_update () {
   source change_application_part
   umount $(cat $CONFIG_DATA | sed -n '/BOOT_partition=/p' | cut -d= -f2) 
   umount /$(cat $CONFIG_DATA | sed -n '/DATA_partition=/p' | cut -d= -f2)
+
+  if [ $(echo $APPLICATION_UPDATE_NAME | cut -d_ -f4) = "REBOOT" ]
+  then 
+    reboot
+  fi
 }
 
 lauch_update 
