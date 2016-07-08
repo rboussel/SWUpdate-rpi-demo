@@ -35,16 +35,32 @@ check_value () {
   if [ "$val_count" -gt "0" ]; then wait_update ; else retry_update ; fi
 }
 
-#A Completer
-#write_version () {
-#
-#}
+write_version () {
+
+if [ $1 = "appli" ]
+then 
+  new_version=$(cat $APPLI_UPDATE_NAME | cut -d_ -f3)
+  version=$(cat "$CURRENT_VERSIONS_FILE/versions" | sed -n 2p | cut -d' ' -f2)
+  sed -i "s/$version/$new_version/"  "$CURRENT_VERSIONS_FILE/versions"
+
+  
+
+elif [ $1 = "rootfs" ]
+then 
+  new_version=$(cat $ROOTFS_UPDATE_NAME | cut -d_ -f3)
+  version=$(cat "$CURRENT_VERSIONS_FILE/versions" | sed -n 2p | cut -d' ' -f9)
+  sed -i "s/$version/$new_version/"  "$CURRENT_VERSIONS_FILE/versions"
+fi
+}
 
 wait_application_validation () {
   #wait appli validation 
   APP_STATE="WAIT"
-  ROOTF_STATE="WAIT"
-  write_version
+  write_version "appli"
+  if [ $UPDATE_STATE = "UPDATE_SYSTEM" ]
+  then 
+    write_version "rootfs"
+  fi
   wait_update
   #else 
   if [ $APP_COUNTER -gt 0 ]
@@ -71,7 +87,6 @@ wait_application_validation () {
   fi
 }
 
-#Complete
 check_update_state () {
 if [ $UPDATE_STATE = "WAIT" ]
 then 
