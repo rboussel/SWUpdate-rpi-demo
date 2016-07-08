@@ -36,9 +36,9 @@ check_value () {
 }
 
 #A Completer
-write_version () {
-
-}
+#write_version () {
+#
+#}
 
 wait_application_validation () {
   #wait appli validation 
@@ -55,7 +55,6 @@ wait_application_validation () {
     if [ $UPDATE_STATE = "UPDATE_SYSTEM" ]
     then
       APP_STATE="PREVIOUS_VERSION"
-      ROOTFS_STATE="WAIT_APP"
       source "$SCRIPTS_PATH/change_application_part"
       fw_setenv part 'setexpr part ${part} ^ 1'
     fi
@@ -67,7 +66,7 @@ wait_application_validation () {
     fi
 
     "$SCRIPTS_PATH/invalidate_update.sh" $APPLI_UPDATE_NAME
-     $UPDATE_STATE = "WAIT"
+     UPDATE_STATE="WAIT"
     reboot
   fi
 }

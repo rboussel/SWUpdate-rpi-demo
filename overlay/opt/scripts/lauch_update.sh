@@ -1,5 +1,4 @@
 #!/bin/sh
-CURRENT_APPLICATION_PART_PATH="/DATA/current_application_part"
 
 find_fs () {
   current_part=$(fw_printenv "part" | cut -d= -f2)
@@ -13,20 +12,21 @@ find_fs () {
 }
 
 find_app () {
-  current_partition_part=$(cat $CURRENT_APPLICATION_PART_PATH)
-  if [ $current_partition_part == "/dev/mmcblk0p5" ]
+  if [ $CURRENT_APP_PART == $(cat $CONFIG_DATA | sed -n '/main_partition=/p' | cut -d= -f2) ]
   then 
     UPDATED_PARTITION="application,alt"
   else
     UPDATED_PARTITION="application,main"
   echo "${UPDATED_PARTITION}"
+  fi
 }
 
 
 lauch_update () {
-  mount /dev/mmcblk0p1 /mnt
-  mount /dev/mmcblk0p7 /DATA
-  if [ $etat_maj == "E_PROCESSUS_MAJ_COMPLETE" && !$etat_rootfs="E_ATTENTE_APPLI" ]
+  mount $(cat $CONFIG_DATA | sed -n '/BOOT_partition=/p' | cut -d= -f2) /mnt
+  mount /$(cat $CONFIG_DATA | sed -n '/DATA_partition=/p' | cut -d= -f2) /DATA
+
+  if [ $UPDATE_STATE == "UPDATE_SYSTEM" && $APPLI_STATE = "WAIT" ]
   then 
     UPDATED_PARTITION=$(find_fs)
     swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$ROOTFS_UPDATE_NAME"
@@ -37,9 +37,9 @@ lauch_update () {
   swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$APPLICATION_UPDATE_NAME"
 
 #A completer
-   source change_application_part
-  umount /dev/mmcblk0p1
-  umount /dev/mmcblk0p7
+  source change_application_part
+  umount $(cat $CONFIG_DATA | sed -n '/BOOT_partition=/p' | cut -d= -f2) 
+  umount /$(cat $CONFIG_DATA | sed -n '/DATA_partition=/p' | cut -d= -f2)
 }
 
 lauch_update 
