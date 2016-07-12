@@ -99,21 +99,36 @@ verify_validity () {
   grep $1 $INVALID_UPDATE_FILE && echo "no" || echo "yes"
 }
 
-source "${SCRIPTS_PATH}/env_var"
-cd $UPLOAD_DIR
-
-if [ $UPDATE_STATE = "WAIT" ]
+is_need_reboot () {
+if [ $REBOOT = "1" ]
 then 
-  if [ "$(get_last_archive_name)" = "yes" ]
+  reboot
+else 
+  exit 0
+fi
+}
+
+main () {
+
+  if [ $UPDATE_STATE = "WAIT" ]
   then 
-    if [ "$(verify_validity $APPLI_UPDATE_NAME)" = "yes" ]
+    if [ "$(get_last_archive_name)" = "yes" ]
     then 
-      which_part
-    else 
-      #exit
-      echo "exit"
+      if [ "$(verify_validity $APPLI_UPDATE_NAME)" = "yes" ]
+      then 
+        which_part
+      else 
+        #exit
+        echo "exit"
+      fi
     fi
   fi
-fi
+}
+
+source "${SCRIPTS_PATH}/env_var"
+cd $UPLOAD_DIR
+main
 source "${SCRIPTS_VAR}/save_env"
+is_need_reboot
+
 

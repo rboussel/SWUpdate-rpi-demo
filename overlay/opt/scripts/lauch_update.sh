@@ -43,7 +43,9 @@ lauch_update () {
 
   if [ "$(echo $APPLICATION_UPDATE_NAME | cut -d_ -f4)" = "REBOOT" ]
   then 
-    reboot
+    REBOOT="1"
+  else 
+    REBOOT="0"
   fi
 }
 
