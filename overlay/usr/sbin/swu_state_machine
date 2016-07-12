@@ -105,8 +105,9 @@ then
 fi
 }
 
-mount /dev/mmcblk0p1 /mnt
 source "${SCRIPTS_PATH}/env_var"
+mount /dev/mmcblk0p1 /mnt
 check_update_state
 umount /dev/mmcblk0p1
 
+source "${SCRIPTS_PATH}/save_env"

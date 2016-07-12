@@ -3,7 +3,8 @@ ID="test"
 PASS="test"
 DOWNLOAD_DIR="/home/test"
 INVALID_UPDATE_FILE="$UPDATE_FILES_DIR/invalid_update"
-CURRENT_VERSIONS_FILE="$UPDATE_FILES_DIR/current_versions"
+CURRENT_VERSIONS_FILE="$UPDATE_FILES_DIR/current_versions"i
+SCRIPTS_PATH="/opt/scripts"
 
 
 #Get last archive name in the FTP server. 
@@ -97,6 +98,7 @@ verify_validity () {
   grep $1 $INVALID_UPDATE_FILE && echo "no" || echo "yes"
 }
 
+source "${SCRIPTS_PATH}/env_var"
 cd $UPLOAD_DIR
 
 if [ $UPDATE_STATE = "WAIT" ]
@@ -112,5 +114,5 @@ then
     fi
   fi
 fi
-
+source "${SCRIPTS_VAR}/save_env"
 
