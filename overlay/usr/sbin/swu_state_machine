@@ -40,33 +40,33 @@ write_version () {
 if [ $1 = "appli" ]
 then 
   new_version=$(cat $APPLI_UPDATE_NAME | cut -d_ -f3)
-  version=$(cat "$CURRENT_VERSIONS_FILE/versions" | sed -n 2p | cut -d' ' -f2)
-  sed -i "s/$version/$new_version/"  "$CURRENT_VERSIONS_FILE/versions"
+  version=$(cat "$CURRENT_VERSIONS_FILE/current_versions" | sed -n 2p | cut -d' ' -f2)
+  sed -i "s/$version/$new_version/"  "$CURRENT_VERSIONS_FILE/current_versions"
 
   
 
 elif [ $1 = "rootfs" ]
 then 
   new_version=$(cat $ROOTFS_UPDATE_NAME | cut -d_ -f3)
-  version=$(cat "$CURRENT_VERSIONS_FILE/versions" | sed -n 2p | cut -d' ' -f9)
-  sed -i "s/$version/$new_version/"  "$CURRENT_VERSIONS_FILE/versions"
+  version=$(cat "$CURRENT_VERSIONS_FILE/current_versions" | sed -n 2p | cut -d' ' -f9)
+  sed -i "s/$version/$new_version/"  "$CURRENT_VERSIONS_FILE/current_versions"
 fi
 }
 
 wait_application_validation () {
-  #wait appli validation 
-  APP_STATE="WAIT"
-  write_version "appli"
-  if [ $UPDATE_STATE = "UPDATE_SYSTEM" ]
+  if [ $val = "ok" ]
   then 
-    write_version "rootfs"
-  fi
-  wait_update
-  #else 
-  if [ $APP_COUNTER -gt 0 ]
+    APP_STATE="WAIT"
+    write_version "appli"
+    if [ $UPDATE_STATE = "UPDATE_SYSTEM" ]
+    then 
+       write_version "rootfs"
+    fi
+    wait_update
+  elif [ $APP_COUNTER -gt 0 ]
   then 
     source "$SCRIPTS_PATH/launch_update.sh" $APPLI_UPDATE_NAME
-    APP_COUNTER=$($APP_COUNTER - 1)
+    APP_COUNTER=$(($APP_COUNTER - 1))
   else  
     if [ $UPDATE_STATE = "UPDATE_SYSTEM" ]
     then
@@ -105,6 +105,8 @@ then
 fi
 }
 
+mount /dev/mmcblk0p1 /mnt
+source "${SCRIPTS_PATH}/env_var"
 check_update_state
-
+umount /dev/mmcblk0p1
 

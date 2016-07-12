@@ -24,7 +24,7 @@ find_app () {
 
 lauch_update () {
   mount $(cat $CONFIG_DATA | sed -n '/BOOT_partition=/p' | cut -d= -f2) /mnt
-  mount /$(cat $CONFIG_DATA | sed -n '/DATA_partition=/p' | cut -d= -f2) /DATA
+  mount $(cat $CONFIG_DATA | sed -n '/DATA_partition=/p' | cut -d= -f2) /DATA
 
   if [ $UPDATE_STATE == "UPDATE_SYSTEM" && $APPLI_STATE = "WAIT" ]
   then 
@@ -35,13 +35,13 @@ lauch_update () {
 
   UPDATED_PARTITION=$(find_app)
   swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$APPLICATION_UPDATE_NAME"
-
+  
 #A completer
-  source change_application_part
+  source change_application_part.sh
   umount $(cat $CONFIG_DATA | sed -n '/BOOT_partition=/p' | cut -d= -f2) 
-  umount /$(cat $CONFIG_DATA | sed -n '/DATA_partition=/p' | cut -d= -f2)
+  umount $(cat $CONFIG_DATA | sed -n '/DATA_partition=/p' | cut -d= -f2)
 
-  if [ $(echo $APPLICATION_UPDATE_NAME | cut -d_ -f4) = "REBOOT" ]
+  if [ "$(echo $APPLICATION_UPDATE_NAME | cut -d_ -f4)" = "REBOOT" ]
   then 
     reboot
   fi

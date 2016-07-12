@@ -1,4 +1,4 @@
-BOOT_partition="/dev/mmcblk0p1"
-DATA_partition="/dev/mmcblk0p7"
-main_partition="/dev/mmcblk0p5"
-alt_partition="/dev/mmcblk0p6"
+BOOT_partition=/dev/mmcblk0p1
+DATA_partition=/dev/mmcblk0p7
+main_partition=/dev/mmcblk0p5
+alt_partition=/dev/mmcblk0p6
