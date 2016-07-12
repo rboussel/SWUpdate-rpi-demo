@@ -3,7 +3,7 @@ ID="test"
 PASS="test"
 DOWNLOAD_DIR="/home/test"
 INVALID_UPDATE_FILE="$UPDATE_FILES_DIR/invalid_update"
-CURRENT_VERSIONS_FILE="$UPDATE_FILES_DIR/current_versions"i
+CURRENT_VERSIONS_FILE="$UPDATE_FILES_DIR/current_versions"
 SCRIPTS_PATH="/opt/scripts"
 
 
@@ -43,6 +43,7 @@ which_part () {
     fi
   else
     UPDATE_STATE="UPDATE_APP"
+    source "${SCRIPTS_PATH}/lauch_update.sh"
   fi
 }
 
