@@ -6,4 +6,4 @@ do
   set | grep $var | sed -e 's/var.*//' >> "$ENV_VAR.tmp"
 done
 
-mv $ENV_VAR.tmp $ENV_VAR
+sort -u "$ENV_VAR.tmp" > $ENV_VAR
