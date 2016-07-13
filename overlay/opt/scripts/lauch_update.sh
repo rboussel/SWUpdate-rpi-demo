@@ -17,16 +17,16 @@ find_app () {
     UPDATED_PARTITION="application,alt"
   else
     UPDATED_PARTITION="application,main"
-  echo "${UPDATED_PARTITION}"
   fi
+  echo "${UPDATED_PARTITION}"
 }
 
 
 lauch_update () {
   mount $(cat $CONFIG_DATA | sed -n '/BOOT_partition=/p' | cut -d= -f2) /mnt
-  mount $(cat $CONFIG_DATA | sed -n '/DATA_partition=/p' | cut -d= -f2) /DATA
+  mount $(cat $CONFIG_DATA | sed -n '/DATA_partition=/p' | cut -d= -f2) /root/data
 
-  if [ $UPDATE_STATE == "UPDATE_SYSTEM" && $APPLI_STATE = "WAIT" ]
+  if [ "$UPDATE_STATE == "UPDATE_SYSTEM"" -a "$APPLI_STATE = "WAIT"" ]
   then 
     UPDATED_PARTITION=$(find_fs)
     swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$ROOTFS_UPDATE_NAME"
@@ -34,7 +34,7 @@ lauch_update () {
   fi
 
   UPDATED_PARTITION=$(find_app)
-  swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$APPLICATION_UPDATE_NAME"
+  swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$APPLI_UPDATE_NAME"
   
 #A completer
   source change_application_part.sh
