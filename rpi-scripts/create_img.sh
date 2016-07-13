@@ -1,4 +1,5 @@
 #!/bin/sh
+#Post build genimage script 
 
 SCRIPT_PATH="${BR2_EXTERNAL}/rpi-scripts/uboot_env.hush"
 DESTINATION_PATH="${BINARIES_DIR}/uboot_env.img"

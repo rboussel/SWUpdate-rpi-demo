@@ -1,4 +1,5 @@
 #!/bin/sh
+#Script to create a signed .swu archive due to the sw-description file.
 
 CONTAINER_VER="1.0"
 EMERGENCY_WORD="CRITICAL"
@@ -30,10 +31,16 @@ create_swu(){
 	cd ${BINARIES_DIR}
 	for file in $FILES; do
 		echo $file;done | cpio -ov -H crc >  ${PRODUCT_NAME}-${CONTAINER_VER}-${EMERGENCY_WORD}.swu
+  if [ -f "${PRODUCT_NAME}-${CONTAINER_VER}-${EMERGENCY_WORD}.swu" ]
+  then 
+    echo "L'archive ${PRODUCT_NAME}-${CONTAINER_VER}-${EMERGENCY_WORD}.swu a bien été créée dans ${BINARIES_DIR}"
+  fi
+
 	rm sw-description sw-description.sig
 }
 
 compute_hash
 create_swdescription_sig ;
 create_swu
+
 exit 0
