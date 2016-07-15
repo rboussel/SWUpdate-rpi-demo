@@ -5,7 +5,7 @@
 ################################################################################
 
 SWUPDATE_CUSTOM_VERSION = master
-SWUPDATE_CUSTOM_SITE = git://github.com/sbabic/swupdatet.git 
+SWUPDATE_CUSTOM_SITE = git://github.com/sbabic/swupdate.git 
 SWUPDATE_CUSTOM_LICENSE = GPLv2+, MIT, Public Domain
 SWUPDATE_CUSTOM_LICENSE_FILES = COPYING
 
