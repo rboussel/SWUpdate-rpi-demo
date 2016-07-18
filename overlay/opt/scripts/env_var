@@ -1,3 +1,5 @@
+#!/bin/sh
+# env_var - Environnement variables usefull to verify update
 CONFIG_DATA="/DATA/config"
 UPDATE_DIR="/DATA/update"
 UPDATE_FILES_DIR="/DATA/update_files"

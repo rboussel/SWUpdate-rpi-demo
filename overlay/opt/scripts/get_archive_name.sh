@@ -1,11 +1,13 @@
 #!/bin/sh
+# get_archive_name.sh - A shell script to get new archive 
+
 ID="test"
 PASS="test"
 DOWNLOAD_DIR="/home/test"
 SCRIPTS_PATH="/opt/scripts"
 source "${SCRIPTS_PATH}/env_var" 
 
-#Get last archive name in the FTP server. 
+# Get last archive name in the FTP server. 
 get_last_archive_name () {
   
   #wget --no-remove-listing "ftp://$ID:$PASS@10.5.16.130/$DOWNLOAD_DIR"
@@ -18,7 +20,7 @@ get_last_archive_name () {
   echo $is_new
 }
 
-#Parse archive's name to know which partition will be updated and download archives
+# Parse archive's name to know which partition will be updated and download archives
 which_part () {
   
   #wget "ftp://$ID:$PASS@10.5.16.130/$DOWNLOAD_DIR/$APPLI_UPDATE_NAME"
@@ -48,7 +50,7 @@ which_part () {
   fi
 }
 
-#Compare previous and new version
+# Compare previous and new version
 compare_versions () {
  
   major_current=$(echo $1 | cut -d. -f1)
@@ -82,7 +84,7 @@ compare_versions () {
   fi
 }
 
-#Get current app and rootfs version
+# Get current app and rootfs version
 get_version () {
 
   if [ $1 = "appli" ]
@@ -95,7 +97,7 @@ get_version () {
 
 }
 
-#Verify if the version is not in invalid update file
+# Verify if the version is not in invalid update file
 verify_validity () {
   grep $1 $INVALID_UPDATE_FILE && echo "no" || echo "yes"
 }
@@ -123,7 +125,6 @@ main () {
   fi
 }
 
-set > "test.txt"
 main
 source "${SCRIPTS_PATH}/save_env"
 #is_need_reboot

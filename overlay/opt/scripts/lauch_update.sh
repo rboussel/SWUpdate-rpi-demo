@@ -1,5 +1,7 @@
 #!/bin/sh
+# lauch_update.sh - A shell script to lauch update 
 
+# Select rootfs partition to update (main or alt) due to u-boot variable
 find_fs () {
   current_part=$(fw_printenv "part" | cut -d= -f2)
   if [ "$current_part" -eq 0 ]
@@ -11,6 +13,7 @@ find_fs () {
   echo "${UPDATED_PARTITION}"
 }
 
+# Select application partition to update (main or alt) due to environnement variable
 find_app () {
   if [ $CURRENT_APP_PART == $(cat $CONFIG_DATA | sed -n '/main_partition=/p' | cut -d= -f2) ]
   then 
@@ -21,7 +24,7 @@ find_app () {
   echo "${UPDATED_PARTITION}"
 }
 
-
+# Lauch the correct update (app or system) and verify if immediate reboot is needed
 lauch_update () {
   mount $(cat $CONFIG_DATA | sed -n '/BOOT_partition=/p' | cut -d= -f2) /mnt
   #mount $(cat $CONFIG_DATA | sed -n '/DATA_partition=/p' | cut -d= -f2) /root/data
@@ -36,7 +39,7 @@ lauch_update () {
   UPDATED_PARTITION=$(find_app)
   swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$APPLI_UPDATE_NAME"
   
-#A completer
+# A completer
   source "$SCRIPTS_PATH/change_application_part.sh"
   umount $(cat $CONFIG_DATA | sed -n '/BOOT_partition=/p' | cut -d= -f2) 
   #umount $(cat $CONFIG_DATA | sed -n '/DATA_partition=/p' | cut -d= -f2)

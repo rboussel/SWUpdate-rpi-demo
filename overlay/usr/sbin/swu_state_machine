@@ -1,9 +1,11 @@
 #!/bin/sh
+# swu_satte_machine - A shell script to check system state after update
 SCRIPTS_PATH="/opt/scripts"
 
 R="2"
 val="ok"
 
+# Reset some variables and wait for a new update 
 wait_update () {
   fw_setenv test_validity "true"
   fw_setenv retry_count "$R"
@@ -23,6 +25,7 @@ decrement_variable () {
   echo $new_value
 }
 
+# Retry rootfs update, if failed, invalidate rootfs and app version 
 retry_update () {
   retry_count_val=$(decrement_variable "retry_count")
   if [ "$retry_count_val" -gt 0 ]
@@ -36,11 +39,13 @@ retry_update () {
   fi
 }
 
+# Check if rootfs boot correctly
 check_value () {
   val_count=$(fw_printenv $1 | cut -d= -f2)
   if [ "$val_count" -gt "0" ]; then wait_application_validation; else retry_update ; fi
 }
 
+# Write new version in config file
 write_version () {
 
 if [ $1 = "appli" ]
@@ -59,6 +64,7 @@ then
 fi
 }
 
+# Check application validation 
 wait_application_validation () {
   if [ $val == "ok" ]
   then 
