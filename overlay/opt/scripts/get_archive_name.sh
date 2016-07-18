@@ -2,15 +2,16 @@
 ID="test"
 PASS="test"
 DOWNLOAD_DIR="/home/test"
+SCRIPTS_PATH="/opt/scripts"
+source "${SCRIPTS_PATH}/env_var" 
 INVALID_UPDATE_FILE="$UPDATE_FILES_DIR/invalid_update"
 CURRENT_VERSIONS_FILE="$UPDATE_FILES_DIR/current_versions"
-SCRIPTS_PATH="/opt/scripts"
-
 
 #Get last archive name in the FTP server. 
 get_last_archive_name () {
   
-  wget --no-remove-listing "ftp://$ID:$PASS@10.5.16.130/$DOWNLOAD_DIR"
+  #wget --no-remove-listing "ftp://$ID:$PASS@10.5.16.130/$DOWNLOAD_DIR"
+  ls $UPDATE_DIR > ".listing"
   APPLI_UPDATE_NAME=$(sort ".listing" | grep .swu | grep APPLI | tail -1)
   echo "APPLI_UPDATE_NAME=$APPLI_UPDATE_NAME" >> "$SCRIPTS_PATH/env_var"
   new_version=$(echo $APPLI_UPDATE_NAME | cut -d_ -f3)
@@ -22,10 +23,11 @@ get_last_archive_name () {
 #Parse archive's name to know which partition will be updated and download archives
 which_part () {
   
-  wget "ftp://$ID:$PASS@10.5.16.130/$DOWNLOAD_DIR/$APPLI_UPDATE_NAME"
+  #wget "ftp://$ID:$PASS@10.5.16.130/$DOWNLOAD_DIR/$APPLI_UPDATE_NAME"
+  cd $UPDATE_DIR
   cat $APPLI_UPDATE_NAME | cpio -idv 
-
-  rootfs_min_version=$(cat minimal_rootfs_version.txt) 
+  cd 
+  rootfs_min_version=$(cat "$UPDATE_DIR/minimal_rootfs_version.txt") 
   current_rootfs_version=$(get_version "rootfs")
   is_greater=$(compare_versions $current_rootfs_version $rootfs_min_version ) 
     
@@ -37,8 +39,9 @@ which_part () {
     then
       if [ $APP_STATE = "WAIT" ]
       then 
-        wget "ftp://$ID:$PASS@10.5.16.130/$DOWNLOAD_DIR/$ROOTFS_UPDATE_NAME"
+        #wget "ftp://$ID:$PASS@10.5.16.130/$DOWNLOAD_DIR/$ROOTFS_UPDATE_NAME"
         UPDATE_STATE="UPDATE_SYSTEM"
+        source "${SCRIPTS_PATH}/lauch_update.sh"
       fi
     fi
   else
@@ -103,8 +106,6 @@ is_need_reboot () {
 if [ $REBOOT = "1" ]
 then 
   reboot
-else 
-  exit 0
 fi
 }
 
@@ -118,17 +119,15 @@ main () {
       then 
         which_part
       else 
-        #exit
         echo "exit"
       fi
     fi
   fi
 }
 
-source "${SCRIPTS_PATH}/env_var"
-cd $UPLOAD_DIR
+set > "test.txt"
 main
-source "${SCRIPTS_VAR}/save_env"
+source "${SCRIPTS_PATH}/save_env"
 is_need_reboot
 
 

@@ -2,12 +2,16 @@
 SCRIPTS_PATH="/opt/scripts"
 
 R="2"
+val="ok"
 
 wait_update () {
   fw_setenv test_validity "true"
   fw_setenv retry_count "$R"
   UPDATE_STATE="WAIT"
-  mount $CURRENT_APP_PART /APP  
+  mount $CURRENT_APP_PART "/APP"
+  sed -i '/APPLI_UPDATE_NAME/d' "$SCRIPTS_PATH/env_var"   
+  sed -i '/ROOTFS_UPDATE_NAME/d' "$SCRIPTS_PATH/env_var"   
+  
 }
 
 decrement_variable () {
@@ -23,7 +27,7 @@ retry_update () {
   then
     source "$SCRIPTS_PATH/lauch_update.sh" $ROOTFS_UPDATE_NAME
   else
-    source "$SCRIPTS_PATH/change_application_part"
+    source "$SCRIPTS_PATH/change_application_part.sh"
     "$SCRIPTS_PATH/invalidate_update.sh" $ROOTFS_UPDATE_NAME
     "$SCRIPTS_PATH/invalidate_update.sh" $APPLI_UPDATE_NAME
     wait_update
@@ -40,45 +44,45 @@ write_version () {
 if [ $1 = "appli" ]
 then 
   new_version=$(cat $APPLI_UPDATE_NAME | cut -d_ -f3)
-  version=$(cat "$CURRENT_VERSIONS_FILE/current_versions" | sed -n 2p | cut -d' ' -f2)
-  sed -i "s/$version/$new_version/"  "$CURRENT_VERSIONS_FILE/current_versions"
+  version=$(cat $CURRENT_VERSIONS_FILE | sed -n '/Application/p' | cut -d= -f2)
+  sed -i "s/$version/$new_version/"  $CURRENT_VERSIONS_FILE
 
   
 
 elif [ $1 = "rootfs" ]
 then 
   new_version=$(cat $ROOTFS_UPDATE_NAME | cut -d_ -f3)
-  version=$(cat "$CURRENT_VERSIONS_FILE/current_versions" | sed -n 2p | cut -d' ' -f9)
-  sed -i "s/$version/$new_version/"  "$CURRENT_VERSIONS_FILE/current_versions"
+  version=$(cat $CURRENT_VERSIONS_FILE | sed -n '/Rootfs/p' | cut -d= -f2)
+  sed -i "s/$version/$new_version/"  $CURRENT_VERSIONS_FILE
 fi
 }
 
 wait_application_validation () {
-  if [ $val = "ok" ]
+  if [ "$val = "ok"" ]
   then 
     APP_STATE="WAIT"
     write_version "appli"
-    if [ $UPDATE_STATE = "UPDATE_SYSTEM" ]
+    if [ "$UPDATE_STATE = "UPDATE_SYSTEM"" ]
     then 
        write_version "rootfs"
     fi
     wait_update
   elif [ $APP_COUNTER -gt 0 ]
   then 
-    source "$SCRIPTS_PATH/launch_update.sh" $APPLI_UPDATE_NAME
+    source "$SCRIPTS_PATH/lauch_update.sh" $APPLI_UPDATE_NAME
     APP_COUNTER=$(($APP_COUNTER - 1))
   else  
-    if [ $UPDATE_STATE = "UPDATE_SYSTEM" ]
+    if [ "$UPDATE_STATE = "UPDATE_SYSTEM"" ]
     then
       APP_STATE="PREVIOUS_VERSION"
-      source "$SCRIPTS_PATH/change_application_part"
-      fw_setenv part 'setexpr part ${part} ^ 1'
+      source "$SCRIPTS_PATH/change_application_part.sh"
+      fw_setenv "part" 'setexpr part ${part} ^ 1'
     fi
   
-    if [ $UPDATE_STATE = "UPDATE_APP" ]
+    if [ "$UPDATE_STATE = "UPDATE_APP"" ]
     then
       APP_STATE="PREVIOUS_VERSION" 
-      source "$SCRIPTS_PATH/change_application_part"
+      source "$SCRIPTS_PATH/change_application_part.sh"
     fi
 
     "$SCRIPTS_PATH/invalidate_update.sh" $APPLI_UPDATE_NAME
@@ -88,22 +92,21 @@ wait_application_validation () {
 }
 
 check_update_state () {
-if [ $UPDATE_STATE = "WAIT" ]
+if [ "$UPDATE_STATE = "WAIT"" ]
 then 
   wait_update
-fi
 
-if [ $UPDATE_STATE = "UPDATE_SYSTEM" ]
+elif [ "$UPDATE_STATE = "UPDATE_SYSTEM"" ]
 then
   check_value "test_count"
   wait_application_validation
-fi
-  
-if [ $UPDATE_STATE = "UPDATE_APP" ]
+ 
+elif [ "$UPDATE_STATE = "UPDATE_APP"" ]
 then 
   wait_application_validation 
 fi
 }
+
 
 source "${SCRIPTS_PATH}/env_var"
 mount /dev/mmcblk0p1 /mnt

@@ -8,4 +8,3 @@ done
 
 sort -u "$ENV_VAR.tmp" > $ENV_VAR
 rm "$ENV_VAR.tmp"
-exit $?
