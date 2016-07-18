@@ -1,0 +1,54 @@
+software =
+{
+    version = "0.1";
+    hardware-compatibility = [ "revA" ]; 
+    
+    application = {
+        main: {
+  
+            images: (
+            {
+                filename = "app_part_image.ext4";
+                device = "/dev/mmcblk0p5";
+                sha256 = @app_part_image.ext4
+            }
+            );
+
+            uboot: (
+            {
+                name = "appli";
+                value = "0";
+            }
+            );
+
+            /* Shell-scripts
+          /*scripts: ( 
+            {
+                filename = "nom du script";
+                type = "preinstall ou postinstall";
+                sha256 = @nomduscript
+            }
+            ); */
+
+        }
+
+        alt: {
+            
+             images: (
+            {
+                filename = "app_part_image.ext4";
+                device = "/dev/mmcblk0p6";
+                sha256 = @app_part_image.ext4
+            }
+            );
+    
+            uboot: (
+            {
+                name = "appli"; 
+                value = "1";
+            }
+            );
+        }
+    };
+}
+
