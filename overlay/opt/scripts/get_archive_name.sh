@@ -4,8 +4,6 @@ PASS="test"
 DOWNLOAD_DIR="/home/test"
 SCRIPTS_PATH="/opt/scripts"
 source "${SCRIPTS_PATH}/env_var" 
-INVALID_UPDATE_FILE="$UPDATE_FILES_DIR/invalid_update"
-CURRENT_VERSIONS_FILE="$UPDATE_FILES_DIR/current_versions"
 
 #Get last archive name in the FTP server. 
 get_last_archive_name () {
@@ -25,7 +23,7 @@ which_part () {
   
   #wget "ftp://$ID:$PASS@10.5.16.130/$DOWNLOAD_DIR/$APPLI_UPDATE_NAME"
   cd $UPDATE_DIR
-  cat $APPLI_UPDATE_NAME | cpio -idv 
+  cpio -idv < $APPLI_UPDATE_NAME  
   cd 
   rootfs_min_version=$(cat "$UPDATE_DIR/minimal_rootfs_version.txt") 
   current_rootfs_version=$(get_version "rootfs")
@@ -128,6 +126,6 @@ main () {
 set > "test.txt"
 main
 source "${SCRIPTS_PATH}/save_env"
-is_need_reboot
+#is_need_reboot
 
 
