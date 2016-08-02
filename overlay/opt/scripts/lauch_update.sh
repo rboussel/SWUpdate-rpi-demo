@@ -24,6 +24,17 @@ find_app () {
   echo "${UPDATED_PARTITION}"
 }
 
+catch_error () {
+  
+  error_value=$( $1 | grep ERROR)
+  if [ "$error_value" ]
+  then 
+    echo "$(date "+%F") $error_value" >> "$UPDATE_FILE/swupdate_error.log"
+    echo "failed"
+  else 
+    echo "success"
+  fi
+}
 
 # Lauch the correct update (app or system) and verify if immediate reboot is needed
 lauch_update () {
@@ -32,21 +43,36 @@ lauch_update () {
   if [ "$UPDATE_STATE == "UPDATE_SYSTEM"" -a "$APPLI_STATE = "WAIT"" ]
   then 
     UPDATED_PARTITION=$(find_fs)
-    swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$ROOTFS_UPDATE_NAME"
-    UPDATE_STATE="SYSTEM_UPDATED"
-    source "$SCRIPT_PATH/save_env"
-    #verif if ok 
-  elif [ $UPDATED_PARTITION = "UPDATE_APP" ]
+    rootfs_state=$(catch_error $(swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$ROOTFS_UPDATE_NAME"))
+    
+    UPDATED_PARTITION=$(find_app)
+    app_state=$(catch_error$(swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$APPLI_UPDATE_NAME"))
+    
+    if [ "$rootfs_state == "success"" -a "$app_state == "success"" ]
+    then 
+      UPDATE_STATE="SYSTEM_UPDATED"
+      source "$SCRIPT_PATH/save_env"
+    else 
+      # if error wait next update
+      UPDATE_STATE="WAIT" 
+      source "$SCRIPT_PATH/save_env"
+    fi
+    
+  elif [ $UPDATED_STATE = "UPDATE_APP" ]
   then 
-    UPDATE_STATE="APP_UPDATED"
-    source "$SCRIPT_PATH/save_env"
+    UPDATED_PARTITION=$(find_app)
+    app_state=$(catch_error$(swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$APPLI_UPDATE_NAME"))
+    if [ $app_state = "success" ]
+    then 
+      UPDATE_STATE="APP_UPDATED"
+      source "$SCRIPT_PATH/save_env"
+    else 
+      # if error wait next update
+      UPDATE_STATE="WAIT" 
+      source "$SCRIPT_PATH/save_env"
+    fi
   fi
 
-  UPDATED_PARTITION=$(find_app)
-  swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$APPLI_UPDATE_NAME"
-  
-# A completer
-  source "$SCRIPTS_PATH/change_application_part.sh"
   umount $(cat $CONFIG_DATA | sed -n '/BOOT_partition=/p' | cut -d= -f2) 
 
   if [ "$(echo $APPLICATION_UPDATE_NAME | cut -d_ -f4)" = "REBOOT" ]
