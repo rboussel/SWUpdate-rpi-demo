@@ -1,122 +1,18 @@
 #!/bin/sh
 # swu_satte_machine - A shell script to check system state after update
 SCRIPTS_PATH="/opt/scripts"
-
-R="2"
-val="ok"
-
-# Reset some variables and wait for a new update 
-wait_update () {
-  fw_setenv test_validity "true"
-  fw_setenv retry_count "$R"
-  UPDATE_STATE="WAIT"
-  APP_COUNTER="3"
-  mount $CURRENT_APP_PART "/APP"
-  sed -i '/APPLI_UPDATE_NAME/d' "$SCRIPTS_PATH/env_var"   
-  sed -i '/ROOTFS_UPDATE_NAME/d' "$SCRIPTS_PATH/env_var"
-
-  
-}
-
-decrement_variable () {
-  new_value=$(fw_printenv $1 | cut -d= -f2)
-  let new_value--
-  fw_setenv $1 $new_value 
-  echo $new_value
-}
-
-# Retry rootfs update, if failed, invalidate rootfs and app version 
-retry_update () {
-  retry_count_val=$(decrement_variable "retry_count")
-  if [ "$retry_count_val" -gt 0 ]
-  then
-    source "$SCRIPTS_PATH/lauch_update.sh" $ROOTFS_UPDATE_NAME
-  else
-    source "$SCRIPTS_PATH/change_application_part.sh"
-    "$SCRIPTS_PATH/invalidate_update.sh" $ROOTFS_UPDATE_NAME
-    "$SCRIPTS_PATH/invalidate_update.sh" $APPLI_UPDATE_NAME
-    wait_update
-  fi
-}
-
-# Check if rootfs boot correctly
-check_value () {
-  val_count=$(fw_printenv $1 | cut -d= -f2)
-  if [ "$val_count" -gt "0" ]; then wait_application_validation; else retry_update ; fi
-}
-
-# Write new version in config file
-write_version () {
-
-if [ $1 = "appli" ]
-then 
-  new_version=$(echo $APPLI_UPDATE_NAME | cut -d_ -f3)
-  version=$(cat $CURRENT_VERSIONS_FILE | sed -n '/Application/p' | cut -d= -f2)
-  sed -i "s/$version/$new_version/"  $CURRENT_VERSIONS_FILE
-
-  
-
-elif [ $1 = "rootfs" ]
-then 
-  new_version=$(echo $ROOTFS_UPDATE_NAME | cut -d_ -f3)
-  version=$(cat $CURRENT_VERSIONS_FILE | sed -n '/Rootfs/p' | cut -d= -f2)
-  sed -i "s/$version/$new_version/"  $CURRENT_VERSIONS_FILE
-fi
-}
-
-# Check application validation 
-wait_application_validation () {
-  if [ $val == "ok" ]
-  then 
-    APP_STATE="WAIT"
-    write_version "appli"
-    if [ $UPDATE_STATE == "UPDATE_SYSTEM" ]
-    then 
-       write_version "rootfs"
-    fi
-    wait_update
-  elif [ $APP_COUNTER -gt 0 ]
-  then 
-    source "$SCRIPTS_PATH/lauch_update.sh" $APPLI_UPDATE_NAME
-    APP_COUNTER=$(($APP_COUNTER - 1))
-  else  
-    if [ $UPDATE_STATE == "UPDATE_SYSTEM" ]
-    then
-      APP_STATE="PREVIOUS_VERSION"
-      source "$SCRIPTS_PATH/change_application_part.sh"
-      fw_setenv "part" 'setexpr part ${part} ^ 1'
-  
-    elif [ $UPDATE_STATE == "UPDATE_APP" ]
-    then
-      APP_STATE="PREVIOUS_VERSION" 
-      source "$SCRIPTS_PATH/change_application_part.sh"
-    fi
-
-    "$SCRIPTS_PATH/invalidate_update.sh" $APPLI_UPDATE_NAME
-     UPDATE_STATE="WAIT"
-    reboot
-  fi
-}
-
-check_update_state () {
-if [ $UPDATE_STATE == "WAIT" ]
-then 
-  wait_update
-
-elif [ $UPDATE_STATE == "UPDATE_SYSTEM" ]
-then
-  check_value "test_count"
- 
-elif [ $UPDATE_STATE == "UPDATE_APP" ]
-then 
-  wait_application_validation 
-fi
-}
-
-
 source "${SCRIPTS_PATH}/env_var"
-mount /dev/mmcblk0p1 /mnt
-check_update_state
-umount /dev/mmcblk0p1
+
+chech_update_state_value () {
+
+  case $UPDATE_STATE in 
+    "WAIT") source "$SCRIPTS_PATH/boot.sh" ;;
+    "GET_APP_ARCHIVE_NAME" | "GET_APP_ARCHIVE" | "GET_ROOTFS_NAME" | "UPDATE_SYSTEM" |"UPDATE_APP") "$SCRIPTS_PATH/get_archive_name.sh" ;;
+    "SYSTEM_UPDATED") mount $TEMP_APP_PART /APP ; "$SCRIPTS_PATH/rootfs_verification.sh" ;;
+    "APP_UPDATED") mount $TEMP_APP_PART /APP ; "$SCRIPTS_PATH/app_verification.sh";;
+    esac 
+}
+
+  check_update_state
 
 source "${SCRIPTS_PATH}/save_env"
