@@ -1,6 +1,8 @@
 #!/bin/sh
 # lauch_update.sh - A shell script to lauch update 
 
+SCRIPTS_PATH="/opt/scripts"
+
 # Select rootfs partition to update (main or alt) due to u-boot variable
 find_fs () {
   current_part=$(fw_printenv "part" | cut -d= -f2)
@@ -51,11 +53,11 @@ lauch_update () {
     if [ "$rootfs_state == "success"" -a "$app_state == "success"" ]
     then 
       UPDATE_STATE="SYSTEM_UPDATED"
-      source "$SCRIPT_PATH/save_env"
+      source "$SCRIPTS_PATH/save_env"
     else 
       # if error wait next update
       UPDATE_STATE="WAIT" 
-      source "$SCRIPT_PATH/save_env"
+      source "$SCRIPTS_PATH/save_env"
     fi
     
   elif [ $UPDATED_STATE = "UPDATE_APP" ]
@@ -65,11 +67,11 @@ lauch_update () {
     if [ $app_state = "success" ]
     then 
       UPDATE_STATE="APP_UPDATED"
-      source "$SCRIPT_PATH/save_env"
+      source "$SCRIPTS_PATH/save_env"
     else 
       # if error wait next update
       UPDATE_STATE="WAIT" 
-      source "$SCRIPT_PATH/save_env"
+      source "$SCRIPTS_PATH/save_env"
     fi
   fi
 
