@@ -26,7 +26,8 @@ find_app () {
   echo "${UPDATED_PARTITION}"
 }
 
-catch_error () {
+# Get log messages
+catch_returned_msg () {
   
   error_value=$( $1 | grep ERROR)
   if [ "$error_value" ]
@@ -34,6 +35,7 @@ catch_error () {
     echo "$(date "+%F") $error_value" >> "$UPDATE_FILE/swupdate_error.log"
     echo "failed"
   else 
+  #grep de success 
     echo "success"
   fi
 }
@@ -45,14 +47,15 @@ lauch_update () {
   if [ "$UPDATE_STATE == "UPDATE_SYSTEM"" -a "$APPLI_STATE = "WAIT"" ]
   then 
     UPDATED_PARTITION=$(find_fs)
-    rootfs_state=$(catch_error $(swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$ROOTFS_UPDATE_NAME"))
+    rootfs_state=$(catch_returned_msg $(swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$ROOTFS_UPDATE_NAME"))
     
     UPDATED_PARTITION=$(find_app)
-    app_state=$(catch_error$(swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$APPLI_UPDATE_NAME"))
+    app_state=$(catch_returned_msg $(swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$APPLI_UPDATE_NAME"))
     
     if [ "$rootfs_state == "success"" -a "$app_state == "success"" ]
     then 
       UPDATE_STATE="SYSTEM_UPDATED"
+      TEMP_APP_PART=$(source "$SCRIPTS_PATH/change_application_part.sh "temp"")
       source "$SCRIPTS_PATH/save_env"
     else 
       # if error wait next update
@@ -63,10 +66,11 @@ lauch_update () {
   elif [ $UPDATED_STATE = "UPDATE_APP" ]
   then 
     UPDATED_PARTITION=$(find_app)
-    app_state=$(catch_error$(swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$APPLI_UPDATE_NAME"))
+    app_state=$(catch_returned_msg $(swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$APPLI_UPDATE_NAME"))
     if [ $app_state = "success" ]
     then 
       UPDATE_STATE="APP_UPDATED"
+      TEMP_APP_PART=$(source "$SCRIPTS_PATH/change_application_part.sh "temp"")
       source "$SCRIPTS_PATH/save_env"
     else 
       # if error wait next update
