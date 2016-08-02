@@ -9,11 +9,16 @@ source "${SCRIPTS_PATH}/env_var"
 
 # Get last archive name in the FTP server. 
 get_last_archive_name () {
+  if [ $UPDATE_STATE = "WAIT" ] 
+  then 
+    #wget --no-remove-listing "ftp://$ID:$PASS@10.5.16.130/$DOWNLOAD_DIR"
+    ls $UPDATE_DIR > ".listing"
+    APPLI_UPDATE_NAME=$(sort ".listing" | grep .swu | grep APPLI | tail -1)
+    echo "APPLI_UPDATE_NAME=$APPLI_UPDATE_NAME" >> "$SCRIPTS_PATH/env_var"
+    source "${SCRIPTS_PATH}/save_env" 
+    UPDATE_STATE="GET_APP_ARCHIVE_NAME"
+  fi
   
-  #wget --no-remove-listing "ftp://$ID:$PASS@10.5.16.130/$DOWNLOAD_DIR"
-  ls $UPDATE_DIR > ".listing"
-  APPLI_UPDATE_NAME=$(sort ".listing" | grep .swu | grep APPLI | tail -1)
-  echo "APPLI_UPDATE_NAME=$APPLI_UPDATE_NAME" >> "$SCRIPTS_PATH/env_var"
   new_version=$(echo $APPLI_UPDATE_NAME | cut -d_ -f3)
   current_version=$(get_version "appli")
   is_new=$(compare_versions $current_version $new_version)
@@ -22,32 +27,60 @@ get_last_archive_name () {
 
 # Parse archive's name to know which partition will be updated and download archives
 which_part () {
-  
-  #wget "ftp://$ID:$PASS@10.5.16.130/$DOWNLOAD_DIR/$APPLI_UPDATE_NAME"
-  cd $UPDATE_DIR
-  cpio -idv < $APPLI_UPDATE_NAME  
-  cd 
-  rootfs_min_version=$(cat "$UPDATE_DIR/minimal_rootfs_version.txt") 
-  current_rootfs_version=$(get_version "rootfs")
-  is_greater=$(compare_versions $current_rootfs_version $rootfs_min_version ) 
+  if [ $UPDATE_STATE = "GET_APP_ARCHIVE_NAME" ]
+  then 
+    #wget "ftp://$ID:$PASS@10.5.16.130/$DOWNLOAD_DIR/$APPLI_UPDATE_NAME"
+    cd $UPDATE_DIR
+    cpio -idv < $APPLI_UPDATE_NAME  
+    UPDATE_STATE="GET_APP_ARCHVIE" 
+    source "${SCRIPTS_PATH}/save_env"
+    cd
+  fi
+
+    rootfs_min_version=$(cat "$UPDATE_DIR/minimal_rootfs_version.txt") 
+    current_rootfs_version=$(get_version "rootfs")
+    is_greater=$(compare_versions $current_rootfs_version $rootfs_min_version ) 
     
   if [ $is_greater = "yes" ]
   then
-    ROOTFS_UPDATE_NAME=$(echo $APPLI_UPDATE_NAME | sed 's/APPLI/ROOTFS/')
-    echo "ROOTFS_UPDATE_NAME=$ROOTFS_UPDATE_NAME" >> "$SCRIPTS_PATH/env_var"
-    if [ $(verify_validity $ROOTFS_UPDATE_NAME) = "yes" ]
-    then
-      if [ $APP_STATE = "WAIT" ]
-      then 
-        #wget "ftp://$ID:$PASS@10.5.16.130/$DOWNLOAD_DIR/$ROOTFS_UPDATE_NAME"
-        UPDATE_STATE="UPDATE_SYSTEM"
-        source "${SCRIPTS_PATH}/lauch_update.sh"
+    if [ $UPDATE_STATE = "GET_APP_ARCHIVE" ]
+    then 
+      #récuper le dernier rootfs
+      #ROOTFS_UPDATE_NAME=$(echo $APPLI_UPDATE_NAME | sed 's/APPLI/ROOTFS/')
+      echo "ROOTFS_UPDATE_NAME=$ROOTFS_UPDATE_NAME" >> "$SCRIPTS_PATH/env_var"
+      UPDATE_STATE="GET_ROOTFS_NAME"
+      source "${SCRIPTS_PATH}/save_env"
+    fi
+
+    if [ $UPDATE_STATE = "GET_ROOTFS_NAME" ]
+    then 
+      if [ $(verify_validity $ROOTFS_UPDATE_NAME) = "yes" ]
+      then
+        if [ $APP_STATE = "WAIT" ]
+        then 
+          #wget "ftp://$ID:$PASS@10.5.16.130/$DOWNLOAD_DIR/$ROOTFS_UPDATE_NAME"
+          UPDATE_STATE="UPDATE_SYSTEM"
+          source "${SCRIPTS_PATH}/save_env"
+        else 
+          UPDATE_STATE="UPDATE_APP"
+          source "${SCRIPTS_PATH}/save_env"
+        fi
+      else 
+         #if rootfs invalid wait next update
+         UPDATE_STATE="WAIT"
+         source "${SCRIPTS_PATH}/save_env"
       fi
     fi
   else
     UPDATE_STATE="UPDATE_APP"
+    source "${SCRIPTS_PATH}/save_env"
+  fi
+
+  if [ "$UPDATE_STATE = "UPDATE_APP"" -o "$UPDATE_STATE = "UPDATE_SYSTEM"" ]
+  then 
     source "${SCRIPTS_PATH}/lauch_update.sh"
   fi
+
 }
 
 # Compare previous and new version
@@ -111,18 +144,16 @@ fi
 
 main () {
 
-  if [ $UPDATE_STATE = "WAIT" ]
+  if [ "$(get_last_archive_name)" = "yes" ]
   then 
-    if [ "$(get_last_archive_name)" = "yes" ]
+    if [ "$(verify_validity $APPLI_UPDATE_NAME)" = "yes" ]
     then 
-      if [ "$(verify_validity $APPLI_UPDATE_NAME)" = "yes" ]
-      then 
-        which_part
-      else 
-        echo "exit"
-      fi
+      which_part
+    else 
+      exit 0
     fi
   fi
+ 
 }
 
 main
