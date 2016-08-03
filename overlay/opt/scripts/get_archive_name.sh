@@ -13,7 +13,7 @@ get_last_archive_name () {
   then 
     #wget --no-remove-listing "ftp://$ID:$PASS@10.5.16.130/$DOWNLOAD_DIR"
     ls $UPDATE_DIR > ".listing"
-    APPLI_UPDATE_NAME=$(sort ".listing" | grep .swu | grep APPLI | tail -1)
+    APPLI_UPDATE_NAME=$(sort ".listing" | grep .swu | grep APP | tail -1)
     echo "APPLI_UPDATE_NAME=$APPLI_UPDATE_NAME" >> "$SCRIPTS_PATH/env_var"
     source "${SCRIPTS_PATH}/save_env" 
     UPDATE_STATE="GET_APP_ARCHIVE_NAME"
@@ -46,7 +46,7 @@ which_part () {
     if [ $UPDATE_STATE = "GET_APP_ARCHIVE" ]
     then 
       #récuper le dernier rootfs
-      #ROOTFS_UPDATE_NAME=$(echo $APPLI_UPDATE_NAME | sed 's/APPLI/ROOTFS/')
+      ROOTFS_UPDATE_NAME=$(sort ".listing" | grep .swu | grep ROOTFS | tail -1)
       echo "ROOTFS_UPDATE_NAME=$ROOTFS_UPDATE_NAME" >> "$SCRIPTS_PATH/env_var"
       UPDATE_STATE="GET_ROOTFS_NAME"
       source "${SCRIPTS_PATH}/save_env"
