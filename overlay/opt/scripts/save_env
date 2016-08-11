@@ -1,12 +1,13 @@
-#!/bin/sih
+#!/bin/sh
 # save_env - A shell script to save environnement variables file
+
 ENV_VAR="$SCRIPTS_PATH/env_var"
 
 save_environnement_file () {
 
   for var in $(cat $ENV_VAR | cut -d= -f1) 
   do 
-    set | grep $var | sed -e '/var/d' >> "$ENV_VAR.tmp"
+    echo "${var}=${!var}" >> "$ENV_VAR.tmp"
   done
 
   sort -u "$ENV_VAR.tmp" > $ENV_VAR
