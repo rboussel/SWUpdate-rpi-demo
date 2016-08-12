@@ -1,12 +1,12 @@
 #!/bin/sh
 # rootfs_verification.sh - A shell script to check rootfs state after update
+
+# Variables
 SCRIPTS_PATH="/opt/scripts"
-
 R="2"
-val="ok"
-
 
 decrement_variable () {
+
   new_value=$(fw_printenv $1 | cut -d= -f2)
   let new_value--
   fw_setenv $1 $new_value 
@@ -15,6 +15,7 @@ decrement_variable () {
 
 # Retry rootfs update, if failed, invalidate rootfs and app version 
 retry_update () {
+ 
   retry_count_val=$(decrement_variable "retry_count")
   if [ "$retry_count_val" -gt 0 ]
   then
@@ -28,8 +29,9 @@ retry_update () {
   fi
 }
 
-# Check if rootfs boot correctly
+# Check if rootfs boots correctly and launch application verification
 check_value () {
+ 
   val_count=$(fw_printenv $1 | cut -d= -f2)
   if [ "$val_count" -gt "0" ]; then source "$SCRIPTS_PATH/app_verification.sh"; else retry_update ; fi
 }

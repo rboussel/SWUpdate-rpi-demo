@@ -1,18 +1,21 @@
 #!/bin/sh
 # swu_satte_machine - A shell script to check system state after update
+
+# Variable
 SCRIPTS_PATH="/opt/scripts"
+# Source environnement variables
 source "${SCRIPTS_PATH}/env_var"
 
 chech_update_state_value () {
 
   case $UPDATE_STATE in 
-    "WAIT") source "$SCRIPTS_PATH/boot.sh" ;;
-    "GET_APP_ARCHIVE_NAME" | "GET_APP_ARCHIVE" | "GET_ROOTFS_NAME" | "UPDATE_SYSTEM" |"UPDATE_APP") "$SCRIPTS_PATH/get_archive_name.sh" ;;
-    "SYSTEM_UPDATED") mount $TEMP_APP_PART /APP ; "$SCRIPTS_PATH/rootfs_verification.sh" ;;
-    "APP_UPDATED") mount $TEMP_APP_PART /APP ; "$SCRIPTS_PATH/app_verification.sh";;
+    "WAIT") source "$SCRIPTS_PATH/boot.sh" ;; # All is ok
+    "GET_APP_ARCHIVE_NAME" | "GET_APP_ARCHIVE" | "GET_ROOTFS_NAME" | "UPDATE_SYSTEM" |"UPDATE_APP") "$SCRIPTS_PATH/get_archive_name.sh" ;; # The update was interrupted 
+    "SYSTEM_UPDATED") mount $TEMP_APP_PART /APP ; "$SCRIPTS_PATH/rootfs_verification.sh" ;; # Rootfs and Application partitions were updated
+    "APP_UPDATED") mount $TEMP_APP_PART /APP ; "$SCRIPTS_PATH/app_verification.sh";; # Only Application partition was updated
     esac 
 }
 
   check_update_state
-
+# Save environnement variables
 source "${SCRIPTS_PATH}/save_env"

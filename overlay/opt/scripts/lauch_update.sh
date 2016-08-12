@@ -1,10 +1,9 @@
 #!/bin/sh
 # lauch_update.sh - A shell script to lauch update 
 
-SCRIPTS_PATH="/opt/scripts"
-
 # Select rootfs partition to update (main or alt) due to u-boot variable
 find_fs () {
+ 
   current_part=$(fw_printenv "part" | cut -d= -f2)
   if [ "$current_part" -eq 0 ]
   then
@@ -15,8 +14,9 @@ find_fs () {
   echo "${UPDATED_PARTITION}"
 }
 
-# Select application partition to update (main or alt) due to environnement variable
+# Select application partition to update (main or alt) due to environnement variables
 find_app () {
+ 
   if [ $CURRENT_APP_PART == $(cat $CONFIG_DATA | sed -n '/main_partition=/p' | cut -d= -f2) ]
   then 
     UPDATED_PARTITION="application,alt"
@@ -32,16 +32,18 @@ catch_returned_msg () {
   error_value=$( $1 | grep ERROR)
   if [ "$error_value" ]
   then 
-    echo "$(date "+%F") $error_value" >> "$UPDATE_FILE/swupdate_error.log"
+    echo "$(date "+%F") $error_value" >> "$UPDATE_FILE/swupdate.log"
     echo "failed"
   else 
-  #grep de success 
+    success_value=$($1 | grep NOTIFY)
+    echo "$(date "+%F") $success_value" >> "$UPDATE_FILE/swupdate.log"
     echo "success"
   fi
 }
 
 # Lauch the correct update (app or system) and verify if immediate reboot is needed
 lauch_update () {
+
   mount $(cat $CONFIG_DATA | sed -n '/BOOT_partition=/p' | cut -d= -f2) /mnt
 
   if [ "$UPDATE_STATE == "UPDATE_SYSTEM"" -a "$APPLI_STATE = "WAIT"" ]

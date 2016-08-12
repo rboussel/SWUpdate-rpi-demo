@@ -1,6 +1,7 @@
 #!/bin/sh
 # get_archive_name.sh - A shell script to get new archive 
 
+# Variables
 ID="test"
 PASS="test"
 DOWNLOAD_DIR="/home/test"
@@ -9,6 +10,7 @@ source "${SCRIPTS_PATH}/env_var"
 
 # Get last archive name in the FTP server. 
 get_last_archive_name () {
+ 
   if [ $UPDATE_STATE = "WAIT" ] 
   then 
     #wget --no-remove-listing "ftp://$ID:$PASS@10.5.16.130/$DOWNLOAD_DIR"
@@ -18,7 +20,7 @@ get_last_archive_name () {
     source "${SCRIPTS_PATH}/save_env" 
     UPDATE_STATE="GET_APP_ARCHIVE_NAME"
   fi
-  
+  # Verify that new version is greater than the current version 
   new_version=$(echo $APPLI_UPDATE_NAME | cut -d_ -f3)
   current_version=$(get_version "appli")
   is_new=$(compare_versions $current_version $new_version)
@@ -27,6 +29,8 @@ get_last_archive_name () {
 
 # Parse archive's name to know which partition will be updated and download archives
 which_part () {
+ 
+  # Get application archive
   if [ $UPDATE_STATE = "GET_APP_ARCHIVE_NAME" ]
   then 
     #wget "ftp://$ID:$PASS@10.5.16.130/$DOWNLOAD_DIR/$APPLI_UPDATE_NAME"
@@ -36,7 +40,7 @@ which_part () {
     source "${SCRIPTS_PATH}/save_env"
     cd
   fi
-
+    # Verify if new rootfs is needed
     rootfs_min_version=$(cat "$UPDATE_DIR/minimal_rootfs_version.txt") 
     current_rootfs_version=$(get_version "rootfs")
     is_greater=$(compare_versions $current_rootfs_version $rootfs_min_version ) 
@@ -45,17 +49,20 @@ which_part () {
   then
     if [ $UPDATE_STATE = "GET_APP_ARCHIVE" ]
     then 
-      #récuper le dernier rootfs
+      # Get rootfs name
       ROOTFS_UPDATE_NAME=$(sort ".listing" | grep .swu | grep ROOTFS | tail -1)
       echo "ROOTFS_UPDATE_NAME=$ROOTFS_UPDATE_NAME" >> "$SCRIPTS_PATH/env_var"
       UPDATE_STATE="GET_ROOTFS_NAME"
       source "${SCRIPTS_PATH}/save_env"
     fi
-
+    
     if [ $UPDATE_STATE = "GET_ROOTFS_NAME" ]
     then 
+      # Verify rootfs version validity
       if [ $(verify_validity $ROOTFS_UPDATE_NAME) = "yes" ]
       then
+        # If the application version is not the previous, download the new rootfs, else we do not need it,
+        # it is in the inactive rootfs partition
         if [ $APP_STATE = "WAIT" ]
         then 
           #wget "ftp://$ID:$PASS@10.5.16.130/$DOWNLOAD_DIR/$ROOTFS_UPDATE_NAME"
@@ -66,7 +73,7 @@ which_part () {
           source "${SCRIPTS_PATH}/save_env"
         fi
       else 
-         #if rootfs invalid wait next update
+         # If rootfs invalid wait next update
          UPDATE_STATE="WAIT"
          source "${SCRIPTS_PATH}/save_env"
       fi
@@ -153,11 +160,10 @@ main () {
       exit 0
     fi
   fi
- 
 }
 
 main
 source "${SCRIPTS_PATH}/save_env"
-#is_need_reboot
+is_need_reboot
 
 

@@ -1,5 +1,6 @@
 #!/bin/sh
 # env_var - Environnement variables usefull to verify update
+
 CONFIG_DATA="/DATA/config"
 UPDATE_DIR="/DATA/update"
 UPDATE_FILES_DIR="/DATA/update_files"
@@ -7,7 +8,6 @@ PUBLIC_KEY_PATH="${UPDATE_DIR}/public.pem"
 CURRENT_APP_PART="/dev/mmcblk0p5"
 CURRENT_VERSIONS_FILE="/DATA/update_files/current_versions"
 INVALID_UPDATE_FILE="/DATA/update_files/invalid_update"
-APP_COUNTER="3"
 UPDATE_STATE="WAIT"
 APP_STATE="WAIT"
 SCRIPTS_PATH="/opt/scripts"

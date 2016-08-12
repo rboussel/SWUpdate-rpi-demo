@@ -1,9 +1,8 @@
 #!/bin/sh
 # app_verification.sh - A shell script to check app state after update
-SCRIPTS_PATH="/opt/scripts"
 
-R="2"
-val="ok"
+# Variables 
+val="ok" # Response of application validatation test (test is not implemented yet)
 
 # Write new version in config file
 write_version () {
@@ -23,7 +22,7 @@ write_version () {
 
 # Check application validation 
 wait_application_validation () {
-  #monter la deuxième partition
+  
   if [ $val == "ok" ]
   then 
     APP_STATE="WAIT"
@@ -34,11 +33,11 @@ wait_application_validation () {
     fi
     source "$SCRIPTS_PATH/change_application_part.sh "change""
     wait_update
-  else  
+  else  # If application does not work, use previous version ( the other partition)
     APP_STATE="PREVIOUS_VERSION"
     if [ $UPDATE_STATE == "SYSTEM_UPDATED" ]
     then
-      fw_setenv "part" 'setexpr part ${part} ^ 1'
+      fw_setenv "part" 'setexpr part ${part} ^ 1' # Change rootfs too
     fi
     source "$SCRIPTS_PATH/invalidate_update.sh" $APPLI_UPDATE_NAME
     UPDATE_STATE="WAIT"
@@ -46,7 +45,7 @@ wait_application_validation () {
   fi
 }
 
-mount /dev/mmcblk0p1 /mnt
+mount /dev/mmcblk0p1 /mnt # Mount u-boot partition
 
 wait_application_validation
 
