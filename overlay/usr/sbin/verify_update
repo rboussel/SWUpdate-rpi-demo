@@ -6,7 +6,7 @@ SCRIPTS_PATH="/opt/scripts"
 # Source environnement variables
 source "${SCRIPTS_PATH}/env_var"
 
-chech_update_state_value () {
+check_update_state_value () {
 
   case $UPDATE_STATE in 
     "WAIT") source "$SCRIPTS_PATH/boot.sh" ;; # All is ok
@@ -16,6 +16,6 @@ chech_update_state_value () {
     esac 
 }
 
-  check_update_state
+check_update_state_value
 # Save environnement variables
 source "${SCRIPTS_PATH}/save_env"

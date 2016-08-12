@@ -17,8 +17,8 @@ get_last_archive_name () {
     ls $UPDATE_DIR > ".listing"
     APPLI_UPDATE_NAME=$(sort ".listing" | grep .swu | grep APP | tail -1)
     echo "APPLI_UPDATE_NAME=$APPLI_UPDATE_NAME" >> "$SCRIPTS_PATH/env_var"
-    source "${SCRIPTS_PATH}/save_env" 
     UPDATE_STATE="GET_APP_ARCHIVE_NAME"
+    source "${SCRIPTS_PATH}/save_env" 
   fi
   # Verify that new version is greater than the current version 
   new_version=$(echo $APPLI_UPDATE_NAME | cut -d_ -f3)
@@ -36,7 +36,7 @@ which_part () {
     #wget "ftp://$ID:$PASS@10.5.16.130/$DOWNLOAD_DIR/$APPLI_UPDATE_NAME"
     cd $UPDATE_DIR
     cpio -idv < $APPLI_UPDATE_NAME  
-    UPDATE_STATE="GET_APP_ARCHVIE" 
+    UPDATE_STATE="GET_APP_ARCHIVE" 
     source "${SCRIPTS_PATH}/save_env"
     cd
   fi
@@ -156,6 +156,7 @@ main () {
     if [ "$(verify_validity $APPLI_UPDATE_NAME)" = "yes" ]
     then 
       which_part
+      exit 0
     else 
       exit 0
     fi
