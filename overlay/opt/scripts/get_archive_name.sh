@@ -37,6 +37,7 @@ which_part () {
     cd $UPDATE_DIR
     cpio -idv < $APPLI_UPDATE_NAME  
     UPDATE_STATE="GET_APP_ARCHIVE" 
+    $APPLI_UPDATE_NAME=$(ls | sort | grep .swu | grep APP | tail -1)
     source "${SCRIPTS_PATH}/save_env"
     cd
   fi
