@@ -41,7 +41,7 @@ which_part () {
     cd
   fi
     # Verify if new rootfs is needed
-    rootfs_min_version=$(cat "$UPDATE_DIR/minimal_rootfs_version.txt") 
+    rootfs_min_version=$(cat "$UPDATE_DIR/minimal_rootfs_version") 
     current_rootfs_version=$(get_version "rootfs")
     is_greater=$(compare_versions $current_rootfs_version $rootfs_min_version ) 
     
