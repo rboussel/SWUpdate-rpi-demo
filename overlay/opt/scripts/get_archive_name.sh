@@ -83,7 +83,7 @@ which_part () {
     source "${SCRIPTS_PATH}/save_env"
   fi
 
-  if [ "$UPDATE_STATE = "UPDATE_APP"" -o "$UPDATE_STATE = "UPDATE_SYSTEM"" ]
+  if [ $UPDATE_STATE = "UPDATE_APP" -o $UPDATE_STATE = "UPDATE_SYSTEM" ]
   then 
     source "${SCRIPTS_PATH}/lauch_update.sh"
   fi
