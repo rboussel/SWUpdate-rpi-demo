@@ -32,11 +32,11 @@ catch_returned_msg () {
   error_value=$( $1 | grep ERROR)
   if [ "$error_value" ]
   then 
-    echo "$(date "+%F") $error_value" >> "$UPDATE_FILE/swupdate.log"
+    echo "$(date "+%F") $error_value" >> "$UPDATE_FILES_DIR/swupdate.log"
     echo "failed"
   else 
     success_value=$($1 | grep NOTIFY)
-    echo "$(date "+%F") $success_value" >> "$UPDATE_FILE/swupdate.log"
+    echo "$(date "+%F") $success_value" >> "$UPDATE_FILES_DIR/swupdate.log"
     echo "success"
   fi
 }
@@ -46,7 +46,7 @@ lauch_update () {
 
   mount $(cat $CONFIG_DATA | sed -n '/BOOT_partition=/p' | cut -d= -f2) /mnt
 
-  if [ "$UPDATE_STATE == "UPDATE_SYSTEM"" -a "$APPLI_STATE = "WAIT"" ]
+  if [ "$UPDATE_STATE = "UPDATE_SYSTEM"" -a "$APP_STATE = "WAIT"" ]
   then 
     UPDATED_PARTITION=$(find_fs)
     rootfs_state=$(catch_returned_msg $(swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$ROOTFS_UPDATE_NAME"))
@@ -54,7 +54,7 @@ lauch_update () {
     UPDATED_PARTITION=$(find_app)
     app_state=$(catch_returned_msg $(swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$APPLI_UPDATE_NAME"))
     
-    if [ "$rootfs_state == "success"" -a "$app_state == "success"" ]
+    if [ "$rootfs_state = "success"" -a "$app_state = "success"" ]
     then 
       UPDATE_STATE="SYSTEM_UPDATED"
       TEMP_APP_PART=$(source "$SCRIPTS_PATH/change_application_part.sh "temp"")
