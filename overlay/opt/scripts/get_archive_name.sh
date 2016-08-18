@@ -2,16 +2,13 @@
 # get_archive_name.sh - A shell script to get new archive 
 
 # Variables
-ID="test"
-PASS="test"
-DOWNLOAD_DIR="/home/test"
 SCRIPTS_PATH="/opt/scripts"
-source "${SCRIPTS_PATH}/env_var" 
+is_archive=""
 
 # Get last archive name in the FTP server. 
 get_last_archive_name () {
  
-  if [ $UPDATE_STATE = "WAIT" ] 
+  if [ "$UPDATE_STATE" = "WAIT" ] 
   then 
     #wget --no-remove-listing "ftp://$ID:$PASS@10.5.16.130/$DOWNLOAD_DIR"
     ls $UPDATE_DIR > ".listing"
@@ -25,21 +22,20 @@ get_last_archive_name () {
   # Verify that new version is greater than the current version 
   new_version=$(echo $APPLI_UPDATE_NAME | cut -d_ -f3)
   current_version=$(get_version "appli")
-  is_new=$(compare_versions $current_version $new_version)
-  echo $is_new
+  is_archive=$(compare_versions $current_version $new_version)
 }
 
 # Parse archive's name to know which partition will be updated and download archives
 which_part () {
  
   # Get application archive
-  if [ $UPDATE_STATE = "GET_APP_ARCHIVE_NAME" ]
+  if [ "$UPDATE_STATE" = "GET_APP_ARCHIVE_NAME" ]
   then 
     #wget "ftp://$ID:$PASS@10.5.16.130/$DOWNLOAD_DIR/$APPLI_UPDATE_NAME"
     cd $UPDATE_DIR
     cpio -idv < $APPLI_UPDATE_NAME  
     UPDATE_STATE="GET_APP_ARCHIVE" 
-    $APPLI_UPDATE_NAME=$(ls | sort | grep .swu | grep APP | tail -1)
+    APPLI_UPDATE_NAME=$(ls | sort | grep .swu | grep APP | tail -1)
     source "${SCRIPTS_PATH}/save_env"
     cd
   fi
@@ -48,9 +44,9 @@ which_part () {
     current_rootfs_version=$(get_version "rootfs")
     is_greater=$(compare_versions $current_rootfs_version $rootfs_min_version ) 
     
-  if [ $is_greater = "yes" ]
+  if [ "$is_greater" = "yes" ]
   then
-    if [ $UPDATE_STATE = "GET_APP_ARCHIVE" ]
+    if [ "$UPDATE_STATE" = "GET_APP_ARCHIVE" ]
     then 
       # Get rootfs name
       ROOTFS_UPDATE_NAME=$(sort ".listing" | grep .swu | grep ROOTFS | tail -1)
@@ -59,14 +55,14 @@ which_part () {
       source "${SCRIPTS_PATH}/save_env"
     fi
     
-    if [ $UPDATE_STATE = "GET_ROOTFS_NAME" ]
+    if [ "$UPDATE_STATE" = "GET_ROOTFS_NAME" ]
     then 
       # Verify rootfs version validity
       if [ $(verify_validity $ROOTFS_UPDATE_NAME) = "yes" ]
       then
         # If the application version is not the previous, download the new rootfs, else we do not need it,
         # it is in the inactive rootfs partition
-        if [ $APP_STATE = "WAIT" ]
+        if [ "$APP_STATE" = "WAIT" ]
         then 
           #wget "ftp://$ID:$PASS@10.5.16.130/$DOWNLOAD_DIR/$ROOTFS_UPDATE_NAME"
           UPDATE_STATE="UPDATE_SYSTEM"
@@ -154,9 +150,11 @@ fi
 
 main () {
 
-  if [ "$(get_last_archive_name)" = "yes" ]
+  is_archive=$(get_last_archive_name)
+  if [ "$is_archive" = "yes" ]
   then 
-    if [ "$(verify_validity $APPLI_UPDATE_NAME)" = "yes" ]
+    is_valide=$(verify_validity $APPLI_UPDATE_NAME)
+    if [ "$is_valide" = "yes" ]
     then 
       which_part
       exit 0
@@ -166,8 +164,9 @@ main () {
   fi
 }
 
+source "${SCRIPTS_PATH}/env_var" 
 main
 source "${SCRIPTS_PATH}/save_env"
-is_need_reboot
+#is_need_reboot
 
 

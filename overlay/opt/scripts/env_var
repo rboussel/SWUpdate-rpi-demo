@@ -11,3 +11,7 @@ INVALID_UPDATE_FILE="/DATA/update_files/invalid_update"
 UPDATE_STATE="WAIT"
 APP_STATE="WAIT"
 SCRIPTS_PATH="/opt/scripts"
+ID="test"
+PASS="test"
+DOWNLOAD_DIR="/home/test"
+
