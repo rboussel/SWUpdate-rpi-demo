@@ -77,7 +77,7 @@ which_part () {
          source "${SCRIPTS_PATH}/save_env"
       fi
     fi
-  else
+  else  
     UPDATE_STATE="UPDATE_APP"
     source "${SCRIPTS_PATH}/save_env"
   fi
@@ -150,7 +150,7 @@ fi
 
 main () {
 
-  is_archive=$(get_last_archive_name)
+  get_last_archive_name
   if [ "$is_archive" = "yes" ]
   then 
     is_valide=$(verify_validity $APPLI_UPDATE_NAME)

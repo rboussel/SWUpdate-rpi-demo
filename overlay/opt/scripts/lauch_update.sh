@@ -46,18 +46,16 @@ lauch_update () {
 
   mount $(cat $CONFIG_DATA | sed -n '/BOOT_partition=/p' | cut -d= -f2) /mnt
 
-  if [ "$UPDATE_STATE = "UPDATE_SYSTEM"" -a "$APP_STATE = "WAIT"" ]
-  then 
+  if [ "$UPDATE_STATE" = "UPDATE_SYSTEM" -a "$APP_STATE" = "WAIT" ]; then 
     UPDATED_PARTITION=$(find_fs)
     rootfs_state=$(catch_returned_msg $(swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$ROOTFS_UPDATE_NAME"))
     
     UPDATED_PARTITION=$(find_app)
     app_state=$(catch_returned_msg $(swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$APPLI_UPDATE_NAME"))
     
-    if [ "$rootfs_state = "success"" -a "$app_state = "success"" ]
-    then 
+    if [ "$rootfs_state" = "success" -a "$app_state" = "success" ]; then 
       UPDATE_STATE="SYSTEM_UPDATED"
-      TEMP_APP_PART=$(source "$SCRIPTS_PATH/change_application_part.sh "temp"")
+      TEMP_APP_PART=$(source "$SCRIPTS_PATH/change_application_part.sh temp")
       source "$SCRIPTS_PATH/save_env"
     else 
       # if error wait next update
@@ -65,14 +63,13 @@ lauch_update () {
       source "$SCRIPTS_PATH/save_env"
     fi
     
-  elif [ $UPDATED_STATE = "UPDATE_APP" ]
-  then 
+  elif [ "$UPDATE_STATE" = "UPDATE_APP" ]; then  
     UPDATED_PARTITION=$(find_app)
     app_state=$(catch_returned_msg $(swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$APPLI_UPDATE_NAME"))
-    if [ $app_state = "success" ]
+    if [ "$app_state" = "success" ]
     then 
       UPDATE_STATE="APP_UPDATED"
-      TEMP_APP_PART=$(source "$SCRIPTS_PATH/change_application_part.sh "temp"")
+      TEMP_APP_PART=$(source "$SCRIPTS_PATH/change_application_part.sh temp")
       source "$SCRIPTS_PATH/save_env"
     else 
       # if error wait next update
@@ -83,7 +80,7 @@ lauch_update () {
 
   umount $(cat $CONFIG_DATA | sed -n '/BOOT_partition=/p' | cut -d= -f2) 
 
-  if [ "$(echo $APPLICATION_UPDATE_NAME | cut -d_ -f4)" = "REBOOT" ]
+  if [ "$(echo $APPLI_UPDATE_NAME | cut -d_ -f4)" = "REBOOT" ]
   then 
     REBOOT="1"
   else 
