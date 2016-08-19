@@ -158,7 +158,8 @@ main () {
     then 
       which_part
       exit 0
-    else 
+    else
+      UPDATE_STATE="WAIT"
       exit 0
     fi
   fi
