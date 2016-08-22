@@ -29,13 +29,13 @@ find_app () {
 # Get log messages
 catch_returned_msg () {
   
-  error_value=$( echo $1 | grep ERROR)
+  error_value=$( echo "$1" | grep ERROR)
   if [ "$error_value" ]
   then 
     echo "$(date "+%F %H:%M:%S") [$2] $error_value" >> "$UPDATE_FILES_DIR/swupdate.log"
     echo "failed"
   else 
-    success_value=$( echo $1 | grep "updated successfully")
+    success_value=$( echo "$1" | grep "updated successfully")
     echo "$(date "+%F %H:%M:%S") [$2] $success_value" >> "$UPDATE_FILES_DIR/swupdate.log"
     echo "success"
   fi
@@ -55,7 +55,7 @@ lauch_update () {
     
     if [ "$rootfs_state" = "success" -a "$app_state" = "success" ]; then 
       UPDATE_STATE="SYSTEM_UPDATED"
-      TEMP_APP_PART=$(source "$SCRIPTS_PATH/change_application_part.sh temp")
+      source "$SCRIPTS_PATH/change_application_part.sh" temp
       source "$SCRIPTS_PATH/save_env"
     else 
       # if error wait next update
@@ -69,7 +69,7 @@ lauch_update () {
     if [ "$app_state" = "success" ]
     then 
       UPDATE_STATE="APP_UPDATED"
-      TEMP_APP_PART=$(source "$SCRIPTS_PATH/change_application_part.sh temp")
+      source "$SCRIPTS_PATH/change_application_part.sh" temp
       source "$SCRIPTS_PATH/save_env"
     else 
       # if error wait next update

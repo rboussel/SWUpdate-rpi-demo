@@ -8,8 +8,8 @@ R="2" # Number of try for rootfs boot
 # Reset some variables and wait for a new update 
 wait_update () {
 
-  fw_setenv test_validity "true" # Validate update
-  fw_setenv retry_count "$R" # Reset rootfs counter
+  fw_setenv "test_validity" "true" # Validate update
+  fw_setenv "retry_count" "$R" # Reset rootfs counter
   UPDATE_STATE="WAIT"  
 
   mount $CURRENT_APP_PART "/APP" 

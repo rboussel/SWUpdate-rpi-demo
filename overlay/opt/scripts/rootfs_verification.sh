@@ -23,8 +23,8 @@ retry_update () {
     source "$SCRIPTS_PATH/save_env"
     source "$SCRIPTS_PATH/lauch_update.sh" 
   else
-    "$SCRIPTS_PATH/invalidate_update.sh" $ROOTFS_UPDATE_NAME
-    "$SCRIPTS_PATH/invalidate_update.sh" $APPLI_UPDATE_NAME
+    source "$SCRIPTS_PATH/invalidate_update.sh" $ROOTFS_UPDATE_NAME
+    source "$SCRIPTS_PATH/invalidate_update.sh" $APPLI_UPDATE_NAME
     source "$SCRIPTS_PATH/boot.sh"
   fi
 }
