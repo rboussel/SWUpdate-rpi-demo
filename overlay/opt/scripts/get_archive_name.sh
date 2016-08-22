@@ -2,7 +2,7 @@
 # get_archive_name.sh - A shell script to get new archive 
 
 # Variables
-SCRIPTS_PATH="/opt/scripts"
+ENVIRONNEMENT_SCRIPT_PATH="/opt/scripts/env_var"
 is_archive=""
 
 # Get last archive name in the FTP server. 
@@ -14,10 +14,10 @@ get_last_archive_name () {
     ls $UPDATE_DIR > ".listing"
     APPLI_UPDATE_NAME=$(sort ".listing" | grep .swu | grep APP | tail -1)
     if [ "$APPLI_UPDATE_NAME" ]; then 
-      echo "APPLI_UPDATE_NAME=$APPLI_UPDATE_NAME" >> "$SCRIPTS_PATH/env_var"
+      echo "APPLI_UPDATE_NAME=$APPLI_UPDATE_NAME" >> $ENVIRONNEMENT_SCRIPT
       UPDATE_STATE="GET_APP_ARCHIVE_NAME"
-      source "${SCRIPTS_PATH}/save_env"
-    else exit 0; fi 
+      source $SAVE_ENVIRONNEMENT_SCRIPT
+      else exit 0; fi 
   fi
   # Verify that new version is greater than the current version 
   new_version=$(echo $APPLI_UPDATE_NAME | cut -d_ -f3)
@@ -36,11 +36,11 @@ which_part () {
     cpio -idv < $APPLI_UPDATE_NAME  
     UPDATE_STATE="GET_APP_ARCHIVE" 
     APPLI_UPDATE_NAME=$(ls | sort | grep .swu | grep APP | tail -1)
-    source "${SCRIPTS_PATH}/save_env"
+   source $SAVE_ENVIRONNEMENT_SCRIPT
     cd
   fi
     # Verify if new rootfs is needed
-    rootfs_min_version=$(cat "$UPDATE_DIR/minimal_rootfs_version") 
+    rootfs_min_version=$(cat $MINIMAL_ROOTFS_VERSION_FILE) 
     current_rootfs_version=$(get_version "rootfs")
     is_greater=$(compare_versions $current_rootfs_version $rootfs_min_version ) 
     
@@ -52,7 +52,7 @@ which_part () {
       ROOTFS_UPDATE_NAME=$(sort ".listing" | grep .swu | grep ROOTFS | tail -1)
       echo "ROOTFS_UPDATE_NAME=$ROOTFS_UPDATE_NAME" >> "$SCRIPTS_PATH/env_var"
       UPDATE_STATE="GET_ROOTFS_NAME"
-      source "${SCRIPTS_PATH}/save_env"
+      source $SAVE_ENVIRONNEMENT_SCRIPT
     fi
     
     if [ "$UPDATE_STATE" = "GET_ROOTFS_NAME" ]
@@ -66,25 +66,23 @@ which_part () {
         then 
           #wget "ftp://$ID:$PASS@10.5.16.130/$DOWNLOAD_DIR/$ROOTFS_UPDATE_NAME"
           UPDATE_STATE="UPDATE_SYSTEM"
-          source "${SCRIPTS_PATH}/save_env"
         else 
           UPDATE_STATE="UPDATE_APP"
-          source "${SCRIPTS_PATH}/save_env"
         fi
       else 
          # If rootfs invalid wait next update
          UPDATE_STATE="WAIT"
-         source "${SCRIPTS_PATH}/save_env"
       fi
+      source $SAVE_ENVIRONNEMENT_SCRIPT
     fi
   else  
     UPDATE_STATE="UPDATE_APP"
-    source "${SCRIPTS_PATH}/save_env"
+    source $SAVE_ENVIRONNEMENT_SCRIPT
   fi
 
   if [ $UPDATE_STATE = "UPDATE_APP" -o $UPDATE_STATE = "UPDATE_SYSTEM" ]
   then 
-    source "${SCRIPTS_PATH}/lauch_update.sh"
+    source $LAUNCH_UPDATE_SCRIPT
   fi
 
 }
@@ -165,9 +163,9 @@ main () {
   fi
 }
 
-source "${SCRIPTS_PATH}/env_var" 
+source $ENVIRONNEMENT_SCRIPT_PATH 
 main
-source "${SCRIPTS_PATH}/save_env"
+source $SAVE_ENVIRONNEMENT_SCRIPT 
 #is_need_reboot
 
 
