@@ -1,5 +1,5 @@
 #!/bin/sh
-# lauch_update.sh - A shell script to lauch update 
+# lauch_update.sh - A shell script to lauch update
 
 # Select rootfs partition to update (main or alt) due to u-boot variable
 find_fs () {
@@ -45,14 +45,19 @@ catch_returned_msg () {
 lauch_update () {
 
   mount $BOOT_PARTITION /mnt
+  rootfs_state="false"
+  app_state="false" 
 
   if [ "$UPDATE_STATE" = "UPDATE_SYSTEM" -a "$APP_STATE" = "WAIT" ]; then 
     UPDATED_PARTITION=$(find_fs)
     rootfs_state=$(catch_returned_msg "$(swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$ROOTFS_UPDATE_NAME")" "ROOTFS")
-    
-    UPDATED_PARTITION=$(find_app)
-    app_state=$(catch_returned_msg "$(swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$APPLI_UPDATE_NAME")" "APP")
-    
+    if [ "$rootfs_state" = "success" ]; then 
+      UPDATED_PARTITION=$(find_app)
+      app_state=$(catch_returned_msg "$(swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$APPLI_UPDATE_NAME")" "APP")
+    else 
+      catch_return_msg "ERROR : Rootfs update failed, App update cancelled" "APP"
+    fi
+
     if [ "$rootfs_state" = "success" -a "$app_state" = "success" ]; then 
       UPDATE_STATE="SYSTEM_UPDATED"
       source $CHANGE_APP_PART_SCRIPT "temp"
