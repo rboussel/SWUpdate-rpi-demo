@@ -1,8 +1,5 @@
-
-
 APP_STATE="WAIT"
 APP_VERIFICATION_SCRIPT="$SCRIPTS_PATH/app_verification.sh"
-#!/bin/sh
 BOOT_PARTITION="/dev/mmcblk0p1"
 CHANGE_APP_PART_SCRIPT="$SCRIPTS_PATH/change_application_part.sh"
 CONFIG_DATA="/DATA/config"
@@ -13,7 +10,6 @@ CURRENT_VERSIONS_FILE="$UPDATE_FILES_DIR/current_versions"
 DATA_PARTITION="/dev/mmcblk0p7"
 DOWNLOAD_DIR="/home/test"
 ENVIRONNEMENT_SCRIPT="$SCRIPTS_PATH/env_var"
-# env_var - Environnement variables usefull to verify update
 GET_ARCHIVE_SCRIPT="$SCRIPTS_PATH/get_archive_name.sh"
 ID="test"
 INVALIDATE_UPDATE_SCRIPT="$SCRIPTS_PATH/invalidate_update.sh"
@@ -27,7 +23,6 @@ RETRY_ROOTFS_UPDATE_COUNTER="retry_count"
 ROOTFS_COUNTER="test_count"
 ROOTFS_VERIFICATION_SCRIPT="$SCRIPTS_PATH/rootfs_verification.sh" 
 SAVE_ENVIRONNEMENT_SCRIPT="$SCRIPTS_PATH/save_env"
-SCRIPTS_PATH="/opt/scripts"
 SETENV_CMD="fw_setenv"
 SWUPDATE_LOG="$UPDATE_FILES_DIR/swupdate.log"
 UPDATE_DIR="/DATA/update"

@@ -3,8 +3,10 @@
 
 # Variable
 SCRIPTS_PATH="/opt/scripts"
+ENVIRONNEMENT_SCRIPT_PATH="$SCRIPTS_PATH/env_var"
+
 # Source environnement variables
-source "${SCRIPTS_PATH}/env_var"
+source $ENVIRONNEMENT_SCRIPT_PATH
 
 check_update_state_value () {
 

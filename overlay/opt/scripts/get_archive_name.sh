@@ -2,7 +2,8 @@
 # get_archive_name.sh - A shell script to get new archive 
 
 # Variables
-ENVIRONNEMENT_SCRIPT_PATH="/opt/scripts/env_var"
+SCRIPTS_PATH="/opt/scripts"
+ENVIRONNEMENT_SCRIPT_PATH="$SCRIPTS_PATH/env_var"
 is_archive=""
 
 # Get last archive name in the FTP server. 
