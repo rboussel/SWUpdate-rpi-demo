@@ -1,23 +1,10 @@
 #!/bin/sh
 # change_application_part.sh - Change application part in current_partition_part and env_var files
 
-# Change current application partition after an update
-change_partition () {
-
-  if [ $CURRENT_APP_PART == $(cat $CONFIG_DATA | sed -n '/main_partition=/p' | cut -d= -f2) ]
-  then 
-    CURRENT_APP_PART=$(cat $CONFIG_DATA | sed -n '/alt_partition=/p' | cut -d= -f2) 
-  else
-    CURRENT_APP_PART=$(cat $CONFIG_DATA | sed -n '/main_partition=/p' | cut -d= -f2)   
-  fi
-
-  echo $CURRENT_APP_PART > $CURRENT_APPLICATION_PART_FILE 
-}
-
 # Get the inactive application partition 
-get_temp_part () {
+get_innactive_partition () {
 
-  if [ $CURRENT_APP_PART == $(cat $CONFIG_DATA | sed -n '/main_partition=/p' | cut -d= -f2) ]
+  if [ "$CURRENT_APP_PART" = $(cat $CONFIG_DATA | sed -n '/main_partition=/p' | cut -d= -f2) ]
   then 
     echo $(cat $CONFIG_DATA | sed -n '/alt_partition=/p' | cut -d= -f2) 
   else
@@ -26,8 +13,11 @@ get_temp_part () {
 }
 
 case $1 in 
-  "change") change_partition ;;
-  "temp") TEMP_APP_PART=$(get_temp_part)
+  "change") CURRENT_APP_PART=$(get_innactive_partition)
+            echo $CURRENT_APP_PART > $CURRENT_APPLICATION_PART_FILE
+            ;;
+  
+  "temp") TEMP_APP_PART=$(get_innactive_partition)
           echo "TEMP_APP_PART=$TEMP_APP_PART" >> $ENVIRONNEMENT_SCRIPT 
           ;;
   esac

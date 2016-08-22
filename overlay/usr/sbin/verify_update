@@ -12,7 +12,7 @@ check_update_state_value () {
     "WAIT") source $WAIT_UPDATE_SCRIPT ;; # All is ok
     "GET_APP_ARCHIVE_NAME" | "GET_APP_ARCHIVE" | "GET_ROOTFS_NAME" | "UPDATE_SYSTEM" |"UPDATE_APP") source $GET_ARCHIVE_SCRIPT ;; # The update was interrupted 
     "SYSTEM_UPDATED") mount $TEMP_APP_PART /APP; source $ROOTFS_VERIFICATION_SCRIPT ;; # Rootfs and Application partitions were updated
-    "APP_UPDATED") mount $TEMP_APP_PART /APP ; source $APP_VERIFICATIN_SCRIPT ;; # Only Application partition was updated
+    "APP_UPDATED") mount $TEMP_APP_PART /APP ; source $APP_VERIFICATION_SCRIPT ;; # Only Application partition was updated
     esac 
 }
 
