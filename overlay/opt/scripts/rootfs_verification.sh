@@ -19,12 +19,12 @@ retry_update () {
   if [ "$retry_count_val" -gt 0 ]
   then
     UPDATE_STATE="UPDATE_SYSTEM"
-    source $SAVE_ENVIRONNEMENT_SCRIPT
-    source $LAUNCH_UPDATE_SCRIPT 
+    source $SCRIPT_SAVE_ENVIRONNEMENT
+    source $SCRIPT_LAUNCH_UPDATE 
   else
-    source $INVALIDATE_UPDATE_SCRIPT $ROOTFS_UPDATE_NAME
-    source $INVALIDATE_UPDATE_SCRIPT $APPLI_UPDATE_NAME
-    source $WAIT_UPDATE_SCRIPT
+    source $SCRIPT_INVALIDATE_UPDATE $ROOTFS_UPDATE_NAME
+    source $SCRIPT_INVALIDATE_UPDATE $APPLI_UPDATE_NAME
+    source $SCRIPT_WAIT_UPDATE
   fi
 }
 
@@ -32,11 +32,11 @@ retry_update () {
 check_value () {
  
   val_count=$($PRINTENV_CMD $1 | cut -d= -f2)
-  if [ "$val_count" -gt "0" ]; then source $APP_VERIFICATION_SCRIPT; else retry_update ; fi
+  if [ "$val_count" -gt "0" ]; then source $SCRIPT_APP_VERIFICATION; else retry_update ; fi
 }
 
 mount $BOOT_PARTITION /mnt
 
 check_value $ROOTFS_COUNTER
 
-umount $BOOT_PARTITION
+umount /mnt

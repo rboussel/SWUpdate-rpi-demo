@@ -10,14 +10,15 @@ wait_update () {
   $SETENV_CMD $VALIDATION_UPDATE "true" # Validate update
   $SETENV_CMD $RETRY_ROOTFS_UPDATE_COUNTER "$R" # Reset rootfs counter
   UPDATE_STATE="WAIT"  
-
+  umount "/APP"
   mount $CURRENT_APP_PART "/APP" 
-  sed -i '/APPLI_UPDATE_NAME/d' $ENVIRONNEMENT_SCRIPT   # Remove temporary environnement variables
-  sed -i '/ROOTFS_UPDATE_NAME/d' $ENVIRONNEMENT_SCRIPT  
+  sed -i '/TEMP_APP_PART/d' $SCRIPT_ENVIRONNEMENT   # Remove temporary environnement variables
+  sed -i '/APPLI_UPDATE_NAME/d' $SCRIPT_ENVIRONNEMENT   # Remove temporary environnement variables
+  sed -i '/ROOTFS_UPDATE_NAME/d' $SCRIPT_ENVIRONNEMENT  
 }
 
 mount $BOOT_PARTITION /mnt # Mount u-boot partition
 wait_update
-umount $BOOT_PARTITION
+umount /mnt
 
-source $SAVE_ENVIRONNEMENT_SCRIPT
+source $SCRIPT_SAVE_ENVIRONNEMENT

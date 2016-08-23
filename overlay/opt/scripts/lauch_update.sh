@@ -32,11 +32,11 @@ catch_returned_msg () {
   error_value=$( echo "$1" | grep ERROR)
   if [ "$error_value" ]
   then 
-    echo "$(date "+%F %H:%M:%S") [$2] $error_value" >> $SWUPDATE_LOG
+    echo "$(date "+%F %H:%M:%S") [$2] $error_value" >> $FILE_SWUPDATE_LOG
     echo "failed"
   else 
     success_value=$( echo "$1" | grep "updated successfully")
-    echo "$(date "+%F %H:%M:%S") [$2] $success_value" >> $SWUPDATE_LOG
+    echo "$(date "+%F %H:%M:%S") [$2] $success_value" >> $FILE_SWUPDATE_LOG
     echo "success"
   fi
 }
@@ -50,35 +50,35 @@ lauch_update () {
 
   if [ "$UPDATE_STATE" = "UPDATE_SYSTEM" -a "$APP_STATE" = "WAIT" ]; then 
     UPDATED_PARTITION=$(find_fs)
-    rootfs_state=$(catch_returned_msg "$(swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$ROOTFS_UPDATE_NAME")" "ROOTFS")
+    rootfs_state=$(catch_returned_msg "$(swupdate -k ${FILE_PUBLIC_KEY} -e ${UPDATED_PARTITION} -vi "${DIR_UPDATE}/$ROOTFS_UPDATE_NAME")" "ROOTFS")
     if [ "$rootfs_state" = "success" ]; then 
       UPDATED_PARTITION=$(find_app)
-      app_state=$(catch_returned_msg "$(swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$APPLI_UPDATE_NAME")" "APP")
+      app_state=$(catch_returned_msg "$(swupdate -k ${FILE_PUBLIC_KEY} -e ${UPDATED_PARTITION} -vi "${DIR_UPDATE}/$APPLI_UPDATE_NAME")" "APP")
     else 
-      catch_return_msg "ERROR : Rootfs update failed, App update cancelled" "APP"
+      catch_returned_msg "ERROR : Rootfs update failed, App update cancelled" "APP"
     fi
 
     if [ "$rootfs_state" = "success" -a "$app_state" = "success" ]; then 
       UPDATE_STATE="SYSTEM_UPDATED"
-      source $CHANGE_APP_PART_SCRIPT "temp"
+      source $SCRIPT_CHANGE_APP_PART "temp"
     else 
       # if error wait next update
       UPDATE_STATE="WAIT" 
     fi
-    source $SAVE_ENVIRONNEMENT_SCRIPT
+    source $SCRIPT_SAVE_ENVIRONNEMENT
     
   elif [ "$UPDATE_STATE" = "UPDATE_APP" ]; then  
     UPDATED_PARTITION=$(find_app)
-    app_state=$(catch_returned_msg "$(swupdate -k ${PUBLIC_KEY_PATH} -e ${UPDATED_PARTITION} -vi "${UPDATE_DIR}/$APPLI_UPDATE_NAME")" "APP")
+    app_state=$(catch_returned_msg "$(swupdate -k ${FILE_PUBLIC_KEY} -e ${UPDATED_PARTITION} -vi "${DIR_UPDATE}/$APPLI_UPDATE_NAME")" "APP")
     if [ "$app_state" = "success" ]
     then 
       UPDATE_STATE="APP_UPDATED"
-      source $CHANGE_APP_PART_SCRIPT "temp"
+      source $SCRIPT_CHANGE_APP_PART "temp"
     else 
       # if error wait next update
       UPDATE_STATE="WAIT" 
     fi
-    source $SAVE_ENVIRONNEMENT_SCRIPT
+    source $SCRIPT_SAVE_ENVIRONNEMENT
   fi
 
   umount $BOOT_PARTITION 

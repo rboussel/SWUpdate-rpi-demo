@@ -14,10 +14,10 @@ get_innactive_partition () {
 
 case $1 in 
   "change") CURRENT_APP_PART=$(get_innactive_partition)
-            echo $CURRENT_APP_PART > $CURRENT_APPLICATION_PART_FILE
+            echo $CURRENT_APP_PART > $FILE_CURRENT_APPLICATION_PART
             ;;
   
   "temp") TEMP_APP_PART=$(get_innactive_partition)
-          echo "TEMP_APP_PART=$TEMP_APP_PART" >> $ENVIRONNEMENT_SCRIPT 
+          echo "TEMP_APP_PART=$TEMP_APP_PART" >> $SCRIPT_ENVIRONNEMENT 
           ;;
   esac

@@ -3,21 +3,21 @@
 
 # Variable
 SCRIPTS_PATH="/opt/scripts"
-ENVIRONNEMENT_SCRIPT_PATH="$SCRIPTS_PATH/env_var"
+SCRIPT_ENVIRONNEMENT="$SCRIPTS_PATH/env_var"
 
 # Source environnement variables
-source $ENVIRONNEMENT_SCRIPT_PATH
+source $SCRIPT_ENVIRONNEMENT
 
 check_update_state_value () {
 
   case $UPDATE_STATE in 
-    "WAIT") source $WAIT_UPDATE_SCRIPT ;; # All is ok
-    "GET_APP_ARCHIVE_NAME" | "GET_APP_ARCHIVE" | "GET_ROOTFS_NAME" | "UPDATE_SYSTEM" |"UPDATE_APP") source $GET_ARCHIVE_SCRIPT ;; # The update was interrupted 
-    "SYSTEM_UPDATED") mount $TEMP_APP_PART /APP; source $ROOTFS_VERIFICATION_SCRIPT ;; # Rootfs and Application partitions were updated
-    "APP_UPDATED") mount $TEMP_APP_PART /APP ; source $APP_VERIFICATION_SCRIPT ;; # Only Application partition was updated
+    "WAIT") source $SCRIPT_WAIT_UPDATE ;; # All is ok
+    "GET_APP_ARCHIVE_NAME" | "GET_APP_ARCHIVE" | "GET_ROOTFS_NAME" | "UPDATE_SYSTEM" |"UPDATE_APP") source $SCRIPT_GET_ARCHIVE ;; # The update was interrupted 
+    "SYSTEM_UPDATED") mount $TEMP_APP_PART /APP; source $SCRIPT_ROOTFS_VERIFICATION ;; # Rootfs and Application partitions were updated
+    "APP_UPDATED") mount $TEMP_APP_PART /APP ; source $SCRIPT_APP_VERIFICATION ;; # Only Application partition was updated
     esac 
 }
 
 check_update_state_value
 # Save environnement variables
-source $SAVE_ENVIRONNEMENT_SCRIPT
+source $SCRIPT_SAVE_ENVIRONNEMENT
