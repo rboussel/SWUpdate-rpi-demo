@@ -12,8 +12,8 @@ get_last_archive_name () {
   if [ "$UPDATE_STATE" = "WAIT" ] 
   then 
     #wget --no-remove-listing "ftp://$ID:$PASS@10.5.16.130/$DIR_DOWNLOAD"
-    ls $DIR_UPDATE > ".listing"
-    APPLI_UPDATE_NAME=$(sort ".listing" | grep .swu | grep APP | tail -1)
+    ls $DIR_UPDATE > "$DIR_UPDATE/.listing"
+    APPLI_UPDATE_NAME=$(sort "$DIR_UPDATE/.listing" | grep .swu | grep APP | tail -1)
     if [ "$APPLI_UPDATE_NAME" ]; then 
       echo "APPLI_UPDATE_NAME=$APPLI_UPDATE_NAME" >> $SCRIPT_ENVIRONNEMENT
       UPDATE_STATE="GET_APP_ARCHIVE_NAME"
@@ -50,10 +50,14 @@ which_part () {
     if [ "$UPDATE_STATE" = "GET_APP_ARCHIVE" ]
     then 
       # Get rootfs name
-      ROOTFS_UPDATE_NAME=$(sort ".listing" | grep .swu | grep ROOTFS | tail -1)
-      echo "ROOTFS_UPDATE_NAME=$ROOTFS_UPDATE_NAME" >> "$SCRIPTS_PATH/env_var"
-      UPDATE_STATE="GET_ROOTFS_NAME"
-      source $SCRIPT_SAVE_ENVIRONNEMENT
+      ROOTFS_UPDATE_NAME=$(sort "$DIR_UPDATE/.listing" | grep .swu | grep ROOTFS | tail -1)
+      if [ "$ROOTFS_UPDATE_NAME" ]; then 
+        echo "ROOTFS_UPDATE_NAME=$ROOTFS_UPDATE_NAME" >> "$SCRIPTS_PATH/env_var"
+        UPDATE_STATE="GET_ROOTFS_NAME"
+        source $SCRIPT_SAVE_ENVIRONNEMENT
+      else 
+        exit 0
+      fi
     fi
     
     if [ "$UPDATE_STATE" = "GET_ROOTFS_NAME" ]
