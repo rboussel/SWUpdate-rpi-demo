@@ -4,13 +4,13 @@
 
 save_environnement_file () {
 
-  for var in $(cat $ENVIRONNEMENT_SCRIPT | cut -d= -f1) 
+  for var in $(cat $SCRIPT_ENVIRONNEMENT | cut -d= -f1) 
   do 
-    set | grep $var | sed -e '/var/d' >> "$ENVIRONNEMENT_SCRIPT.tmp" 
+    eval echo $var=\$$var >> "$SCRIPT_ENVIRONNEMENT.tmp"
   done
 
-  sort -u "$ENVIRONNEMENT_SCRIPT.tmp" > $ENVIRONNEMENT_SCRIPT
-  rm "$ENVIRONNEMENT_SCRIPT.tmp"
+  sort -u "$SCRIPT_ENVIRONNEMENT.tmp" > $SCRIPT_ENVIRONNEMENT
+  rm "$SCRIPT_ENVIRONNEMENT.tmp"
 }
 
 save_environnement_file
