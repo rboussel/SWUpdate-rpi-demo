@@ -52,7 +52,7 @@ which_part () {
       # Get rootfs name
       ROOTFS_UPDATE_NAME=$(sort "$DIR_UPDATE/.listing" | grep .swu | grep ROOTFS | tail -1)
       if [ "$ROOTFS_UPDATE_NAME" ]; then 
-        echo "ROOTFS_UPDATE_NAME=$ROOTFS_UPDATE_NAME" >> "$SCRIPTS_PATH/env_var"
+        echo "ROOTFS_UPDATE_NAME=$ROOTFS_UPDATE_NAME" >> "$SCRIPT_ENVIRONNEMENT"
         UPDATE_STATE="GET_ROOTFS_NAME"
         source $SCRIPT_SAVE_ENVIRONNEMENT
       else 
