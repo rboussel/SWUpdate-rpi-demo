@@ -1,9 +1,6 @@
 #!/bin/sh
 # rootfs_verification.sh - A shell script to check rootfs state after update
 
-# Variables
-R="2"
-
 decrement_variable () {
 
   new_value=$($PRINTENV_CMD $1 | cut -d= -f2)

@@ -3,7 +3,7 @@
 
 # Variable
 SCRIPTS_PATH="/opt/scripts"
-SCRIPT_ENVIRONNEMENT="$SCRIPTS_PATH/env_var"
+SCRIPT_ENVIRONNEMENT="/DATA/env_var"
 
 # Source environnement variables
 source $SCRIPT_ENVIRONNEMENT

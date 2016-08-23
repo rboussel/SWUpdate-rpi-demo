@@ -3,7 +3,7 @@
 
 # Variables
 SCRIPTS_PATH="/opt/scripts"
-SCRIPT_ENVIRONNEMENT="$SCRIPTS_PATH/env_var"
+SCRIPT_ENVIRONNEMENT="/DATA/env_var"
 is_archive=""
 
 # Get last archive name in the FTP server. 
