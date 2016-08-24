@@ -6,6 +6,8 @@ APP_VERIFICATION_VALUE="ok" # Response of application validatation test (test is
 
 # Write new version in config file
 write_version () {
+# Args 
+# $1 - "appli" or "rootfs"
 
   if [ "$1" = "appli" ]; then  
     new_version=$(echo $APPLI_UPDATE_NAME | cut -d_ -f3)

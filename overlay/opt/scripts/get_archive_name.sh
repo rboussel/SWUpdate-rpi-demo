@@ -55,9 +55,7 @@ which_part () {
         echo "ROOTFS_UPDATE_NAME=$ROOTFS_UPDATE_NAME" >> "$SCRIPT_ENVIRONNEMENT"
         UPDATE_STATE="GET_ROOTFS_NAME"
         source $SCRIPT_SAVE_ENVIRONNEMENT
-      else 
-        exit 0
-      fi
+      else exit 0; fi
     fi
     
     if [ "$UPDATE_STATE" = "GET_ROOTFS_NAME" ]
@@ -94,40 +92,30 @@ which_part () {
 
 # Compare previous and new version
 compare_versions () {
- 
+# Args 
+# $1 - Current version 
+# $2 - New version 
+
   major_current=$(echo $1 | cut -d. -f1)
   major_new=$(echo $2 | cut -d. -f1)
+  result="no"
 
-  if [ $major_new  -gt $major_current ]
-  then 
-    echo "yes"
-  elif [ $major_new  -eq $major_current ]
-  then
+  if [ $major_new  -gt $major_current ]; then result="yes"; fi
+  if [ $major_new  -eq $major_current ]; then
     minor_current=$(echo $1 | cut -d. -f2)
     minor_new=$(echo $2 | cut -d. -f2)
-    if [ $minor_new -gt $minor_current ]
-    then 
-      echo "yes"
-    elif [ $minor_new -eq $minor_current ]
-    then 
+    if [ $minor_new -gt $minor_current ]; then result="yes"; fi
+    if [ $minor_new -eq $minor_current ]; then  
       revision_current=$(echo $1 | cut -d. -f3)
       revision_new=$(echo $2 | cut -d. -f3)
-      if [ $revision_new -gt $revision_current ]
-      then 
-        echo "yes"
-      else 
-        echo "no"
-      fi
-    else 
-      echo "no"
-    fi
-  else 
-    echo "no"
-  fi
+      if [ $revision_new -gt $revision_current ]; then result="yes"; fi; fi; fi
+  echo $result
 }
 
 # Get current app and rootfs version
 get_version () {
+# Args 
+# $1 - "appli" or "rootfs"
 
   if [ $1 = "appli" ]
   then 
@@ -141,6 +129,9 @@ get_version () {
 
 # Verify if the version is not in invalid update file
 verify_validity () {
+# Args 
+# $1 - Archive name
+  
   grep $1 $FILE_INVALID_UPDATE && echo "no" || echo "yes"
 }
 

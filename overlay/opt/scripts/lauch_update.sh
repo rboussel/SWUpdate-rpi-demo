@@ -28,7 +28,10 @@ find_app () {
 
 # Get log messages
 catch_returned_msg () {
-  
+# Args
+# $1 - Swupdate command or error message
+# $2 - "APP" or "ROOTFS"
+
   error_value=$( echo "$1" | grep ERROR)
   if [ "$error_value" ]
   then 
