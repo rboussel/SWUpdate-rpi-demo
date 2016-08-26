@@ -10,7 +10,6 @@ wait_update () {
   $SETENV_CMD $VALIDATION_UPDATE "true" # Validate update
   $SETENV_CMD $RETRY_ROOTFS_UPDATE_COUNTER "$R" # Reset rootfs counter
   UPDATE_STATE="WAIT"  
-  umount "/APP"
   mount $CURRENT_APP_PART "/APP" 
   sed -i '/TEMP_APP_PART/d' $SCRIPT_ENVIRONNEMENT   # Remove temporary environnement variables
   sed -i '/APPLI_UPDATE_NAME/d' $SCRIPT_ENVIRONNEMENT   # Remove temporary environnement variables
